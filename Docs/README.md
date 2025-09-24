@@ -8,7 +8,7 @@ This allows replaying the loading times, which enabled realistic performance tes
 [![Build and test](https://github.com/ProgramMax/FileReadSpeedTest/actions/workflows/build-and-test.yaml/badge.svg)](https://github.com/ProgramMax/FileReadSpeedTest/actions/workflows/build-and-test.yaml)
 
 An example output using the provided test file:
-
+```
 Worker thread count: 6
 Clock is steady
 Buffer size: 4096
@@ -27,6 +27,7 @@ Context 11 - 10900ns
 Context 12 - 15400ns
 Context 13 - 12500ns
 Context 14 - 27400ns
+```
 
 ## Features
 
