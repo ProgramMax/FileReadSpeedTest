@@ -14,10 +14,14 @@
 
 namespace {
 
+	std::chrono::time_point<std::chrono::high_resolution_clock> pre_open_time_;
+
+
 	std::optional<OverlappedIOFile> CreateOverlappedIOFile(LPCSTR file_name) noexcept {
-		// TODO: Add FILE_FLAG_NO_BUFFERING flag
-		// and FILE_FLAG_RANDOM_ACCESS or FILE_FLAG_SEQUENTIAL_SCAN
-		HANDLE file_handle = CreateFileA(file_name, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, NULL);
+		pre_open_time_ = std::chrono::high_resolution_clock::now();
+		// Use FILE_FLAG_RANDOM_ACCESS instead of FILE_FLAG_SEQUENTIAL_SCAN for file formats where that is a better fit
+		// FILE_FLAG_NO_BUFFERING
+		HANDLE file_handle = CreateFileA(file_name, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_FLAG_OVERLAPPED | FILE_FLAG_SEQUENTIAL_SCAN | FILE_FLAG_NO_BUFFERING, NULL);
 		if (file_handle == INVALID_HANDLE_VALUE) {
 			// GetLastError
 			return std::nullopt;
@@ -183,6 +187,11 @@ void OverlappedIOFileRead::WaitForThreadsToFinish() noexcept {
 	// Wait for worker threads to finish
 	WaitForMultipleObjects(static_cast<DWORD>(thread_pool_.threads_.size()), (const HANDLE*)thread_pool_.threads_.data(), TRUE, INFINITE);
 
+	auto open_delay = std::chrono::duration_cast<std::chrono::nanoseconds>(overlapped_io_file_.file_open_time_ - pre_open_time_);
+	auto open_to_read_delay = std::chrono::duration_cast<std::chrono::nanoseconds>(read_issue_time_ - overlapped_io_file_.file_open_time_);
+	std::cout << "Open delay: " << open_delay << std::endl;
+	std::cout << "Open to read delay: " << open_to_read_delay << std::endl;
+
 	size_t i = 0;
 	for (auto& context : contexts_) {
 		auto read_issue_delay = std::chrono::duration_cast<std::chrono::nanoseconds>(context.request_start_time_ - read_issue_time_);
@@ -231,6 +240,10 @@ std::expected<OverlappedIOFileRead, PrepareToReadFileError> PrepareToReadFile(LP
 		return std::unexpected{PrepareToReadFileError::CouldNotCreateCompletionPort};
 	}
 
+	// TODO: Creating the threads takes a significant amount of time.
+	// This happens after the file is opened and the completion port is created.
+	// The OS *could* begin prefetching the data. I don't know if it does or not.
+	// But if it does, this gives it ample opportunity to impact the measurements.
 	auto thread_pool = CreateThreadPool(WorkerThread, completion_port->handle_, worker_thread_count);
 	if (!thread_pool.has_value()) {
 		return std::unexpected{PrepareToReadFileError::CouldNotCreateThread};
