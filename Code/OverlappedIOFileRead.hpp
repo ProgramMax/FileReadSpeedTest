@@ -14,9 +14,20 @@
 #define NOMINMAX
 #include <Windows.h>
 
-using OverlappedIOFile = SpecificHandleObject;
+//using OverlappedIOFile = SpecificHandleObject;
 using CompletionPort = SpecificHandleObject;
 using Thread = SpecificHandleObject;
+
+struct OverlappedIOFile : public SpecificHandleObject {
+
+	explicit OverlappedIOFile(HANDLE handle) noexcept
+		: SpecificHandleObject(std::move(handle))
+		, file_open_time_(std::chrono::high_resolution_clock::now())
+	{}
+
+	std::chrono::time_point<std::chrono::high_resolution_clock> file_open_time_;
+
+};
 
 class ThreadPool {
 public:
@@ -39,7 +50,6 @@ struct IOContext {
 	bool is_complete_;
 	std::chrono::time_point<std::chrono::high_resolution_clock> request_start_time_;
 	std::chrono::time_point<std::chrono::high_resolution_clock> request_complete_time_;
-
 
 };
 
