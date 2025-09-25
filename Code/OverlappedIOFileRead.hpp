@@ -56,6 +56,7 @@ public:
 	ThreadPool thread_pool_;
 	// TODO: Put contexts in their own cache line so there isn't cache contention
 	std::vector<IOContext> contexts_;
+	std::chrono::time_point<std::chrono::high_resolution_clock> read_issue_time_;
 	
 };
 

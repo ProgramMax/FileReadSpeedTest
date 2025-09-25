@@ -4,7 +4,7 @@
 
 int main() {
 	const DWORD worker_thread_count = 6;
-	// TODO: Don't hard-code this. And definitely replace it before uploading to GitHub
+	// TODO: Take the file as part of the command line parameters.
 	auto overlapped_io_file_read = PrepareToReadFile(R"(../../Test Data/crystaldiskmark nvme ssd.png)", worker_thread_count);
 	if (!overlapped_io_file_read.has_value()) {
 		std::cerr << "Error";
