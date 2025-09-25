@@ -12,21 +12,21 @@ An example output using the provided test file:
 Worker thread count: 6
 Clock is steady
 Buffer size: 4096
-Context 0 - 39000ns
-Context 1 - 13300ns
-Context 2 - 6200ns
-Context 3 - 11600ns
-Context 4 - 11600ns
-Context 5 - 11500ns
-Context 6 - 11800ns
-Context 7 - 10400ns
-Context 8 - 11600ns
-Context 9 - 9800ns
-Context 10 - 15100ns
-Context 11 - 10900ns
-Context 12 - 15400ns
-Context 13 - 12500ns
-Context 14 - 27400ns
+Buffer 0 - Read issue delay: 100ns - Issue to completion delay: 51600ns
+Buffer 1 - Read issue delay: 45200ns - Issue to completion delay: 19000ns
+Buffer 2 - Read issue delay: 54600ns - Issue to completion delay: 18500ns
+Buffer 3 - Read issue delay: 63900ns - Issue to completion delay: 14700ns
+Buffer 4 - Read issue delay: 72700ns - Issue to completion delay: 18600ns
+Buffer 5 - Read issue delay: 82300ns - Issue to completion delay: 17800ns
+Buffer 6 - Read issue delay: 95800ns - Issue to completion delay: 11500ns
+Buffer 7 - Read issue delay: 102900ns - Issue to completion delay: 11600ns
+Buffer 8 - Read issue delay: 110200ns - Issue to completion delay: 15600ns
+Buffer 9 - Read issue delay: 118600ns - Issue to completion delay: 16700ns
+Buffer 10 - Read issue delay: 128300ns - Issue to completion delay: 14700ns
+Buffer 11 - Read issue delay: 137000ns - Issue to completion delay: 77900ns
+Buffer 12 - Read issue delay: 145900ns - Issue to completion delay: 16000ns
+Buffer 13 - Read issue delay: 154900ns - Issue to completion delay: 60000ns
+Buffer 14 - Read issue delay: 163500ns - Issue to completion delay: 95400ns
 ```
 
 ## Features

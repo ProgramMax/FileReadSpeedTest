@@ -138,6 +138,8 @@ OverlappedIOFileRead::OverlappedIOFileRead(OverlappedIOFile overlapped_io_file, 
 {}
 
 void OverlappedIOFileRead::Read() noexcept {
+	read_issue_time_ = std::chrono::high_resolution_clock::now();
+
 	// TODO: Only have a certain number of IOPS in flight at a time?
 	for (DWORD i = 0; i < contexts_.size(); ++i) {
 		contexts_[i].request_start_time_ = std::chrono::high_resolution_clock::now();
@@ -183,8 +185,10 @@ void OverlappedIOFileRead::WaitForThreadsToFinish() noexcept {
 
 	size_t i = 0;
 	for (auto& context : contexts_) {
+		auto read_issue_delay = std::chrono::duration_cast<std::chrono::nanoseconds>(context.request_start_time_ - read_issue_time_);
 		auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(context.request_complete_time_ - context.request_start_time_);
-		std::cout << "Context " << i++ << " - " << duration << std::endl;
+
+		std::cout << "Buffer " << i++ << " - Read issue delay: " << read_issue_delay << " - Issue to completion delay: " << duration << std::endl;
 
 		OSAllocator::deallocate(context.buffer_);
 	}
