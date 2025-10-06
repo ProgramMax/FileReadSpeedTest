@@ -79,7 +79,8 @@ namespace {
 			if (!allocation.has_value()) {
 				return std::nullopt;
 			}
-			//buffer = std::make_unique<char[]>(BUFFER_SIZE);
+			// TODO: Confirm the allocation is aligned to volume sector size
+			// TODO: Confirm buffer_size is a multiple of volume sector size
 
 			auto io_context = IOContext{std::move(overlapped), overlapped_io_file.handle_, std::move(*allocation), buffer_size, file_offset};
 
@@ -227,12 +228,30 @@ std::expected<OverlappedIOFileRead, PrepareToReadFileError> PrepareToReadFile(LP
 		return std::unexpected{PrepareToReadFileError::CouldNotGetFileSize};
 	}
 
+	std::cout << "File size: " << file_size.QuadPart << std::endl;
+
 	FILE_STORAGE_INFO file_storage_info;
 	result = GetFileInformationByHandleEx(file->handle_, FileStorageInfo, &file_storage_info, sizeof(file_storage_info));
 	if (result == FALSE) {
 		return std::unexpected{PrepareToReadFileError::CouldNotGetFileSize};
 	}
-	unsigned long partition_block_size = file_storage_info.PhysicalBytesPerSectorForPerformance;
+	unsigned long partition_block_size = file_storage_info.LogicalBytesPerSector;
+	// When doing writes instead of reads, prefer file_storage_info.PhysicalBytesPerSectorForPerformance;
+
+	// Get the page size
+	SYSTEM_INFO system_info;
+	GetSystemInfo(&system_info);
+	/*if (compiling for x86 or arm64) {
+		SYSTEM_INFO native_system_info;
+		GetNativeSystemInfo(&native_system_info);
+	}*/
+	partition_block_size = system_info.dwPageSize;
+	// TODO: Confirm the page size is a multiple of the logical bytes per sector
+
+	// On Windows, VirtualAlloc has 64 KiB granularity:
+	// https://devblogs.microsoft.com/oldnewthing/20031008-00/?p=42223
+	// TODO: Should we push the buffer size to 64 KiB?
+
 	std::cout << "Buffer size: " << partition_block_size << std::endl;
 
 	auto completion_port = CreateCompletionPort(*file, worker_thread_count);

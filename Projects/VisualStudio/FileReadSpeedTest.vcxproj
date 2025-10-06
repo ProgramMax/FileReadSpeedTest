@@ -20,11 +20,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Code\EntryPoint.cpp" />
+    <ClCompile Include="..\..\Code\GetProcessorInformation.cpp" />
     <ClCompile Include="..\..\Code\OSAllocator.cpp" />
     <ClCompile Include="..\..\Code\OverlappedIOFileRead.cpp" />
     <ClCompile Include="..\..\Code\Win32Types.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Code\GetProcessorInformation.hpp" />
     <ClInclude Include="..\..\Code\OSAllocator.hpp" />
     <ClInclude Include="..\..\Code\OverlappedIOFileRead.hpp" />
     <ClInclude Include="..\..\Code\Win32Types.hpp" />
