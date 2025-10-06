@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include "GetProcessorInformation.hpp"
 #include "OverlappedIOFileRead.hpp"
 
 int main(int argc, const char * argv[]) {
@@ -9,9 +10,19 @@ int main(int argc, const char * argv[]) {
 		return -1;
 	}
 
-	const DWORD worker_thread_count = 6;
-	// TODO: Take the file as part of the command line parameters.
-	auto overlapped_io_file_read = PrepareToReadFile(argv[1], worker_thread_count);
+	auto processor_information = GetProcessorInformation();
+	if (!processor_information.has_value()) {
+		std::cerr << "Error: Could not find processor information." << std::endl;
+		return -1;
+	}
+
+	std::cout << "CPU cores: " << processor_information->actual_cores_;
+	if (processor_information->hyperthreading_cores_ != 0) {
+		std::cout << " (and " << processor_information->hyperthreading_cores_ << " hyperthreading cores)";
+	}
+	std::cout << std::endl;
+
+	auto overlapped_io_file_read = PrepareToReadFile(argv[1], processor_information->actual_cores_);
 	if (!overlapped_io_file_read.has_value()) {
 		std::cerr << "Error";
 		return -1;

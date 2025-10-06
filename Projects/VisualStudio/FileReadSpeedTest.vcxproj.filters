@@ -5,10 +5,12 @@
     <ClCompile Include="..\..\Code\OSAllocator.cpp" />
     <ClCompile Include="..\..\Code\OverlappedIOFileRead.cpp" />
     <ClCompile Include="..\..\Code\Win32Types.cpp" />
+    <ClCompile Include="..\..\Code\GetProcessorInformation.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Code\OSAllocator.hpp" />
     <ClInclude Include="..\..\Code\OverlappedIOFileRead.hpp" />
     <ClInclude Include="..\..\Code\Win32Types.hpp" />
+    <ClInclude Include="..\..\Code\GetProcessorInformation.hpp" />
   </ItemGroup>
 </Project>
