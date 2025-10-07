@@ -40,7 +40,7 @@ Buffer 14 - Read issue delay: 163500ns - Issue to completion delay: 95400ns
 * OSes:
     * Windows
 
-If you would like max to support more contacts us and let us know.
+If you would like FileReadSpeedTest to support more contacts us and let us know.
 
 ## Engage
 
