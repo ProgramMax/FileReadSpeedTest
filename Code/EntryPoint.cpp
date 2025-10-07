@@ -1,6 +1,7 @@
+#include <cstdint>
 #include <iostream>
 
-#include "GetProcessorInformation.hpp"
+#include "GetProcessorCoreInformation.hpp"
 #include "OverlappedIOFileRead.hpp"
 
 int main(int argc, const char * argv[]) {
@@ -10,19 +11,28 @@ int main(int argc, const char * argv[]) {
 		return -1;
 	}
 
-	auto processor_information = GetProcessorInformation();
-	if (!processor_information.has_value()) {
+	auto processor_core_information = GetProcessorCoreInformation();
+	if (!processor_core_information.has_value()) {
 		std::cerr << "Error: Could not find processor information." << std::endl;
 		return -1;
 	}
 
-	std::cout << "CPU cores: " << processor_information->actual_cores_;
-	if (processor_information->hyperthreading_cores_ != 0) {
-		std::cout << " (and " << processor_information->hyperthreading_cores_ << " hyperthreading cores)";
-	}
-	std::cout << std::endl;
+	int16_t max_efficiency = -1;
+	uint16_t max_efficiency_core_count = 0;
+	for (auto& core_information : *processor_core_information) {
+		std::cout << "CPU cores: " << core_information.count_ << " @ performance class: " << core_information.efficiency_class_;
+		if (core_information.has_hyperthreading_ != 0) {
+			std::cout << " (with hyperthreading)";
+		}
 
-	auto overlapped_io_file_read = PrepareToReadFile(argv[1], processor_information->actual_cores_);
+		if (core_information.efficiency_class_ > max_efficiency) {
+			max_efficiency = core_information.efficiency_class_;
+			max_efficiency_core_count = core_information.count_;
+		}
+		std::cout << std::endl;
+	}
+
+	auto overlapped_io_file_read = PrepareToReadFile(argv[1], max_efficiency_core_count);
 	if (!overlapped_io_file_read.has_value()) {
 		std::cerr << "Error";
 		return -1;
