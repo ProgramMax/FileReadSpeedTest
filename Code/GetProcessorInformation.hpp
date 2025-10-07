@@ -2,17 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GETPROCESSORINFORMATION_HPP
-#define GETPROCESSORINFORMATION_HPP
+#ifndef FILEREADSPEEDTEST_GETPROCESSORINFORMATION_HPP
+#define FILEREADSPEEDTEST_GETPROCESSORINFORMATION_HPP
 
 #include <optional>
 
-class ProcessorCoreInformation {
-public:
-	int actual_cores_;
-	int hyperthreading_cores_;
-};
+namespace FileReadSpeedTest {
 
-std::optional<ProcessorCoreInformation> GetProcessorInformation() noexcept;
+	class ProcessorCoreInformation {
+	public:
+		int actual_cores_;
+		int hyperthreading_cores_;
+	};
 
-#endif // #ifndef GETPROCESSORINFORMATION_HPP
+	std::optional<ProcessorCoreInformation> GetProcessorInformation() noexcept;
+
+} // namespace FileReadSpeedTest
+
+#endif // #ifndef FILEREADSPEEDTEST_GETPROCESSORINFORMATION_HPP

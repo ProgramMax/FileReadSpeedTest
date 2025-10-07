@@ -2,32 +2,41 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef WIN32TYPES_HPP
-#define WIN32TYPES_HPP
+#ifndef FILEREADSPEEDTEST_WIN32TYPES_HPP
+#define FILEREADSPEEDTEST_WIN32TYPES_HPP
 
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#ifndef NOMINMAX
 #define NOMINMAX
+#endif
 #include <Windows.h>
 
-class GenericHandleObject {
-public:
+namespace FileReadSpeedTest {
 
-	explicit GenericHandleObject(HANDLE handle) noexcept;
-	GenericHandleObject(const GenericHandleObject& rhs) = delete;
-	GenericHandleObject(GenericHandleObject&& rhs) noexcept;
-	~GenericHandleObject() noexcept;
+	class GenericHandleObject {
+	public:
 
-	GenericHandleObject& operator =(const GenericHandleObject& rhs) = delete;
-	GenericHandleObject& operator =(GenericHandleObject&& rhs) noexcept;
+		explicit GenericHandleObject(HANDLE handle) noexcept;
+		GenericHandleObject(const GenericHandleObject& rhs) = delete;
+		GenericHandleObject(GenericHandleObject&& rhs) noexcept;
+		~GenericHandleObject() noexcept;
 
-	HANDLE handle_ = INVALID_HANDLE_VALUE;
+		GenericHandleObject& operator =(const GenericHandleObject& rhs) = delete;
+		GenericHandleObject& operator =(GenericHandleObject&& rhs) noexcept;
 
-};
+		HANDLE handle_ = INVALID_HANDLE_VALUE;
 
-class SpecificHandleObject : public GenericHandleObject {
-public:
+	};
 
-	explicit SpecificHandleObject(HANDLE handle) noexcept;
+	class SpecificHandleObject : public GenericHandleObject {
+	public:
 
-};
+		explicit SpecificHandleObject(HANDLE handle) noexcept;
 
-#endif // #ifndef WIN32TYPES_HPP
+	};
+
+} // namespace FileReadSpeedTest
+
+#endif // #ifndef FILEREADSPEEDTEST_WIN32TYPES_HPP

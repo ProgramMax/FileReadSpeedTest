@@ -14,7 +14,7 @@ int main(int argc, const char * argv[]) {
 		return -1;
 	}
 
-	auto processor_information = GetProcessorInformation();
+	auto processor_information = FileReadSpeedTest::GetProcessorInformation();
 	if (!processor_information.has_value()) {
 		std::cerr << "Error: Could not find processor information." << std::endl;
 		return -1;
@@ -26,7 +26,7 @@ int main(int argc, const char * argv[]) {
 	}
 	std::cout << std::endl;
 
-	auto overlapped_io_file_read = PrepareToReadFile(argv[1], processor_information->actual_cores_);
+	auto overlapped_io_file_read = FileReadSpeedTest::PrepareToReadFile(argv[1], processor_information->actual_cores_);
 	if (!overlapped_io_file_read.has_value()) {
 		std::cerr << "Error";
 		return -1;
