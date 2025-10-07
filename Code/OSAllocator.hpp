@@ -2,26 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef OSALLOCATOR_HPP
-#define OSALLOCATOR_HPP
+#ifndef FILEREADSPEEDTEST_OSALLOCATOR_HPP
+#define FILEREADSPEEDTEST_OSALLOCATOR_HPP
 
 #include <optional>
 
-class OSAllocation {
-public:
+namespace FileReadSpeedTest {
 
-	explicit OSAllocation(void* memory) noexcept;
+	class OSAllocation {
+	public:
 
-	void* memory_;
+		explicit OSAllocation(void* memory) noexcept;
 
-};
+		void* memory_;
 
-class OSAllocator {
-public:
+	};
 
-	static std::optional<OSAllocation> allocate(size_t size) noexcept;
-	static void deallocate(OSAllocation& allocation) noexcept;
+	class OSAllocator {
+	public:
 
-};
+		static std::optional<OSAllocation> allocate(size_t size) noexcept;
+		static void deallocate(OSAllocation& allocation) noexcept;
 
-#endif // #ifndef OSALLOCATOR_HPP
+	};
+
+} // namespace FileReadSpeedTest
+
+#endif // #ifndef FILEREADSPEEDTEST_OSALLOCATOR_HPP
