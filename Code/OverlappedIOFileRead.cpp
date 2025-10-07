@@ -7,7 +7,6 @@
 #include <optional>
 
 #include <iostream>
-//#include <thread>
 #include <utility>
 
 #ifndef WIN32_LEAN_AND_MEAN
@@ -44,29 +43,6 @@ namespace {
 		}
 
 		return FileReadSpeedTest::CompletionPort{std::move(completion_port_handle)};
-	}
-
-	std::optional<FileReadSpeedTest::Thread> CreateThread(LPTHREAD_START_ROUTINE thread_entry_point, LPVOID parameter) noexcept {
-		HANDLE thread_handle = ::CreateThread(nullptr, 0, thread_entry_point, parameter, 0, nullptr);
-		if (thread_handle == NULL) {
-			// GetLastError
-			return std::nullopt;
-		}
-
-		return FileReadSpeedTest::Thread(std::move(thread_handle));
-	}
-
-	std::optional<FileReadSpeedTest::ThreadPool> CreateThreadPool(LPTHREAD_START_ROUTINE thread_entry_point, LPVOID parameter, DWORD worker_thread_count) noexcept {
-		std::vector<FileReadSpeedTest::Thread> threads;
-		for (size_t i = worker_thread_count; i > 0; i--) {
-			auto thread = CreateThread(thread_entry_point, parameter);
-			if (!thread.has_value()) {
-				return std::nullopt;
-			}
-			threads.emplace_back(std::move(*thread));
-		}
-
-		return FileReadSpeedTest::ThreadPool{std::move(threads)};
 	}
 
 	std::optional<std::vector<FileReadSpeedTest::IOContext>> CreateIOContexts(LARGE_INTEGER file_size, unsigned long buffer_size, FileReadSpeedTest::OverlappedIOFile& overlapped_io_file) noexcept {
@@ -130,10 +106,6 @@ namespace {
 
 namespace FileReadSpeedTest {
 
-	ThreadPool::ThreadPool(std::vector<Thread> threads) noexcept
-		: threads_(std::move(threads))
-	{}
-
 	IOContext::IOContext(OVERLAPPED overlapped, HANDLE file_handle, OSAllocation buffer, DWORD bytes_to_read, DWORD file_offset) noexcept
 		: overlapped_(std::move(overlapped))
 		, file_handle_(std::move(file_handle))
@@ -143,11 +115,11 @@ namespace FileReadSpeedTest {
 		, is_complete_(false)
 	{}
 
-	OverlappedIOFileRead::OverlappedIOFileRead(OverlappedIOFile overlapped_io_file, CompletionPort completion_port, ThreadPool thread_pool, std::vector<IOContext> contexts) noexcept
+	OverlappedIOFileRead::OverlappedIOFileRead(OverlappedIOFile overlapped_io_file, CompletionPort completion_port, std::vector<IOContext> contexts, LARGE_INTEGER file_size) noexcept
 		: overlapped_io_file_(std::move(overlapped_io_file))
 		, completion_port_(std::move(completion_port))
-		, thread_pool_(std::move(thread_pool))
 		, contexts_(std::move(contexts))
+		, file_size_(std::move(file_size))
 	{}
 
 	void OverlappedIOFileRead::Read() noexcept {
@@ -189,12 +161,14 @@ namespace FileReadSpeedTest {
 
 
 		// Signal worker threads to shutdown
+		/*
 		for (size_t i = 0; i < thread_pool_.threads_.size(); ++i) {
 			PostQueuedCompletionStatus(completion_port_.handle_, 0, 0, nullptr);
 		}
 
 		// Wait for worker threads to finish
 		WaitForMultipleObjects(static_cast<DWORD>(thread_pool_.threads_.size()), (const HANDLE*)thread_pool_.threads_.data(), TRUE, INFINITE);
+		*/
 
 		auto open_delay = std::chrono::duration_cast<std::chrono::nanoseconds>(overlapped_io_file_.file_open_time_ - pre_open_time_);
 		auto open_to_read_delay = std::chrono::duration_cast<std::chrono::nanoseconds>(read_issue_time_ - overlapped_io_file_.file_open_time_);
@@ -213,14 +187,6 @@ namespace FileReadSpeedTest {
 	}
 
 	std::expected<OverlappedIOFileRead, PrepareToReadFileError> PrepareToReadFile(LPCSTR file_name, DWORD worker_thread_count) noexcept {
-		std::cout << "Worker thread count: " << worker_thread_count << std::endl;
-
-		if (std::chrono::high_resolution_clock::is_steady) {
-			std::cout << "Clock is steady" << std::endl;
-		} else {
-			std::cout << "Clock is not steady" << std::endl;
-		}
-
 		auto file = CreateOverlappedIOFile(file_name);
 		if (!file.has_value()) {
 			return std::unexpected{PrepareToReadFileError::CouldNotOpenFile};
@@ -238,7 +204,7 @@ namespace FileReadSpeedTest {
 
 		std::cout << "File size: " << file_size.QuadPart << std::endl;
 
-		FILE_STORAGE_INFO file_storage_info;
+		FILE_STORAGE_INFO file_storage_info = {};
 		result = GetFileInformationByHandleEx(file->handle_, FileStorageInfo, &file_storage_info, sizeof(file_storage_info));
 		if (result == FALSE) {
 			return std::unexpected{PrepareToReadFileError::CouldNotGetFileSize};
@@ -271,10 +237,12 @@ namespace FileReadSpeedTest {
 		// This happens after the file is opened and the completion port is created.
 		// The OS *could* begin prefetching the data. I don't know if it does or not.
 		// But if it does, this gives it ample opportunity to impact the measurements.
+		/*
 		auto thread_pool = CreateThreadPool(WorkerThread, completion_port->handle_, worker_thread_count);
 		if (!thread_pool.has_value()) {
 			return std::unexpected{PrepareToReadFileError::CouldNotCreateThread};
 		}
+		*/
 
 		auto io_contexts = CreateIOContexts(file_size, partition_block_size, *file);
 		if (!io_contexts.has_value()) {
@@ -282,9 +250,21 @@ namespace FileReadSpeedTest {
 		}
 
 		return OverlappedIOFileRead(std::move(*file),
-																std::move(*completion_port),
-																std::move(*thread_pool),
-																std::move(*io_contexts));
+		                            std::move(*completion_port),
+		                            std::move(*io_contexts),
+		                            std::move(file_size));
+	}
+
+	std::optional<LARGE_INTEGER> GetNewReadOffset(LARGE_INTEGER file_size, LARGE_INTEGER current_read_start, size_t buffer_interval_in_bytes) noexcept {
+		LARGE_INTEGER new_read_offset = {};
+		new_read_offset.QuadPart = current_read_start.QuadPart + buffer_interval_in_bytes;
+
+		if (new_read_offset.QuadPart > file_size.QuadPart) {
+			// Past the end of the file
+			return std::nullopt;
+		}
+
+		return new_read_offset;
 	}
 
 } // namespace FileReadSpeedTest 

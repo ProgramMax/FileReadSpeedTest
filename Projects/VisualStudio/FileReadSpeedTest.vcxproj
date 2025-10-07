@@ -23,13 +23,23 @@
     <ClCompile Include="..\..\Code\GetProcessorCoreInformation.cpp" />
     <ClCompile Include="..\..\Code\OSAllocator.cpp" />
     <ClCompile Include="..\..\Code\OverlappedIOFileRead.cpp" />
+    <ClCompile Include="..\..\Code\OverlappedIOFileReadTask.cpp" />
+    <ClCompile Include="..\..\Code\TaskThread.cpp" />
+    <ClCompile Include="..\..\Code\ThreadPool.cpp" />
     <ClCompile Include="..\..\Code\Win32Types.cpp" />
+    <ClCompile Include="..\..\Dependencies\max\Task.cpp" />
+    <ClCompile Include="..\..\Dependencies\max\TaskQueue.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Code\GetProcessorCoreInformation.hpp" />
     <ClInclude Include="..\..\Code\OSAllocator.hpp" />
     <ClInclude Include="..\..\Code\OverlappedIOFileRead.hpp" />
+    <ClInclude Include="..\..\Code\OverlappedIOFileReadTask.hpp" />
+    <ClInclude Include="..\..\Code\TaskThread.hpp" />
+    <ClInclude Include="..\..\Code\ThreadPool.hpp" />
     <ClInclude Include="..\..\Code\Win32Types.hpp" />
+    <ClInclude Include="..\..\Dependencies\max\Task.hpp" />
+    <ClInclude Include="..\..\Dependencies\max\TaskQueue.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
@@ -83,6 +93,18 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>$(SolutionDir)\..\..\Dependencies\;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>$(SolutionDir)\..\..\Dependencies\;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>$(SolutionDir)\..\..\Dependencies\;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>$(SolutionDir)\..\..\Dependencies\;$(IncludePath)</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
