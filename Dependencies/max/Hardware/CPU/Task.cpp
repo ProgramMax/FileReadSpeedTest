@@ -2,20 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MAX_TASK_HPP
-#define MAX_TASK_HPP
+#include <max/Hardware/CPU/Task.hpp>
 
 namespace max {
+namespace Hardware {
+namespace CPU {
 
-	class Task {
-	public:
+	Task::~Task() noexcept = default;
 
-		virtual ~Task() noexcept;
-
-		virtual void Run() noexcept = 0;
-
-	};
-
+} // namespace CPU
+} // namespace Hardware
 } // namespace max
-
-#endif // #ifndef MAX_TASK_HPP

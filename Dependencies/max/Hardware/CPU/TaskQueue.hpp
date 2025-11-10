@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MAX_TASKQUEUE_HPP
-#define MAX_TASKQUEUE_HPP
+#ifndef MAX_HARDWARE_CPU_TASKQUEUE_HPP
+#define MAX_HARDWARE_CPU_TASKQUEUE_HPP
 
 #include <expected>
 #include <memory>
@@ -11,15 +11,18 @@
 #include <queue>
 
 
+// TODO: Handle other platforms
 // TODO: This is only needed for the definition of HANDLE. Can we remove this somehow?
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIn32_LEAN_AND_MEAN
 #endif
 #include <Windows.h>
 
-#include <max/Task.hpp>
+#include <max/Hardware/CPU/Task.hpp>
 
 namespace max {
+namespace Hardware {
+namespace CPU {
 
 	// TaskQueue uses std::mutex, which cannot be copied nor moved.
 	// This restriction has a major impact on the design of the class.
@@ -30,7 +33,8 @@ namespace max {
 
 	// Assume a 64-byte cache line size, and align to that.
 	// This is so a vector of TaskQueues does not cause false sharing between threads.
-	class alignas(64) TaskQueue {
+	// TODO: VC warns that alignas(64) did indeed pad. And we treat warnings as errors.
+	class /*alignas(64)*/ TaskQueue {
 	public:
 
 		// TODO: This is only public so std::make_unique can call it
@@ -78,6 +82,8 @@ namespace max {
 
 	void TaskRunnerLoop(TaskQueue* task_queue) noexcept;
 
+} // namespace CPU
+} // namespace Hardware
 } // namespace max
 
-#endif // #ifndef MAX_TASKQUEUE_HPP
+#endif // #ifndef MAX_HARDWARE_CPU_TASKQUEUE_HPP

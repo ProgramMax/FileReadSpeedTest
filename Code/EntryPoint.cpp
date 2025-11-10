@@ -50,7 +50,7 @@ int main(int argc, const char * argv[]) {
 
 
 	// Create main task queue to receive completion notifications
-	auto main_task_queue = max::CreateTaskQueue();
+	auto main_task_queue = max::Hardware::CPU::CreateTaskQueue();
 	if (!main_task_queue.has_value()) {
 		std::cerr << "Could not create main task queue\n";
 		return -1;
@@ -70,10 +70,10 @@ int main(int argc, const char * argv[]) {
 	for (auto& thread: thread_pool->task_threads_) {
 		auto add_task_result = thread.task_queue_->AddTask(std::make_unique<FileReadSpeedTest::OverlappedIOFileReadTask>(&overlapped_io_file_read.value(), current_read_start, thread_count * buffer_size, i, thread_count, thread.task_queue_.get(), main_task_queue->get(), &completed_threads));
 		switch (add_task_result) {
-		case max::TaskQueue::AddTaskError::Okay:
+		case max::Hardware::CPU::TaskQueue::AddTaskError::Okay:
 			break;
-		case max::TaskQueue::AddTaskError::ShuttingDown:
-		case max::TaskQueue::AddTaskError::CouldNotSetEvent:
+		case max::Hardware::CPU::TaskQueue::AddTaskError::ShuttingDown:
+		case max::Hardware::CPU::TaskQueue::AddTaskError::CouldNotSetEvent:
 			return -1;
 		}
 
@@ -84,7 +84,7 @@ int main(int argc, const char * argv[]) {
 
 	// Wait for all tasks to be complete.
 	// TODO: Currently, the Shutdown is queued up before the follow-up tasks.
-	max::TaskRunnerLoop(main_task_queue->get());
+	max::Hardware::CPU::TaskRunnerLoop(main_task_queue->get());
 
 
 

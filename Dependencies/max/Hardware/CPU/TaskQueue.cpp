@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "TaskQueue.hpp"
+#include <max/Hardware/CPU/TaskQueue.hpp>
 
 #include <type_traits>
 
 #include <utility>
 
 namespace max {
+namespace Hardware {
+namespace CPU {
 
 	TaskQueue::TaskQueue(HANDLE wake_event) noexcept
 		: task_queue_mutex_()
@@ -66,7 +68,7 @@ namespace max {
 		if (result != WAIT_OBJECT_0) {
 			return WaitForEventError::CouldNotWait;
 		} else {
-			BOOL result = ResetEvent(wake_event_);
+			result = ResetEvent(wake_event_);
 			if (result == 0) {
 				// GetLastError()
 				return WaitForEventError::CouldNotResetEvent;
@@ -117,4 +119,6 @@ namespace max {
 		} while (continue_looping);
 	}
 
+} // namespace CPU
+} // namespace Hardware
 } // namespace max

@@ -10,7 +10,7 @@
 
 namespace FileReadSpeedTest {
 
-	ThreadPool::ThreadPool(std::vector<TaskThread> task_threads) noexcept
+	ThreadPool::ThreadPool(std::vector<max::Hardware::CPU::TaskThread> task_threads) noexcept
 		: task_threads_(std::move(task_threads))
 	{}
 
@@ -41,10 +41,10 @@ namespace FileReadSpeedTest {
 
 
 		// Create task threads.
-		std::vector<TaskThread> task_threads;
+		std::vector<max::Hardware::CPU::TaskThread> task_threads;
 
 		for (size_t i = 0; i < max_efficiency_core_count; i++) {
-			auto task_thread = CreateTaskThread();
+			auto task_thread = max::Hardware::CPU::CreateTaskThread();
 			if (!task_thread.has_value()) {
 				return std::nullopt;
 			}

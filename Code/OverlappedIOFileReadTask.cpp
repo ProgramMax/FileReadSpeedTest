@@ -23,7 +23,7 @@ namespace FileReadSpeedTest {
 		: overlapped_io_file_read_(std::move(overlapped_io_file_read))
 	{}
 	*/
-	OverlappedIOFileReadTask::OverlappedIOFileReadTask(OverlappedIOFileRead* overlapped_io_file_read, LARGE_INTEGER current_read_start, size_t buffer_interval_in_bytes, size_t context_index, size_t thread_count, max::TaskQueue* task_queue, max::TaskQueue* main_task_queue, size_t* completed_threads) noexcept
+	OverlappedIOFileReadTask::OverlappedIOFileReadTask(OverlappedIOFileRead* overlapped_io_file_read, LARGE_INTEGER current_read_start, size_t buffer_interval_in_bytes, size_t context_index, size_t thread_count, max::Hardware::CPU::TaskQueue* task_queue, max::Hardware::CPU::TaskQueue* main_task_queue, size_t* completed_threads) noexcept
 		: overlapped_io_file_read_(std::move(overlapped_io_file_read))
 		, current_read_start_(std::move(current_read_start))
 		, buffer_interval_in_bytes_(std::move(buffer_interval_in_bytes))
@@ -50,10 +50,10 @@ namespace FileReadSpeedTest {
 			// Instead, notify the main task queue that this thread is done.
 			auto add_task_result = main_task_queue_->AddTask(std::make_unique<Finished>(completed_threads_, thread_count_, main_task_queue_));
 			switch (add_task_result) {
-			case max::TaskQueue::AddTaskError::Okay:
+			case max::Hardware::CPU::TaskQueue::AddTaskError::Okay:
 				break;
-			case max::TaskQueue::AddTaskError::ShuttingDown:
-			case max::TaskQueue::AddTaskError::CouldNotSetEvent:
+			case max::Hardware::CPU::TaskQueue::AddTaskError::ShuttingDown:
+			case max::Hardware::CPU::TaskQueue::AddTaskError::CouldNotSetEvent:
 				return;
 			}
 
@@ -68,10 +68,10 @@ namespace FileReadSpeedTest {
 
 		auto add_task_result = task_queue_->AddTask(std::make_unique<OverlappedIOFileReadTask>(overlapped_io_file_read_, *new_read_offset, buffer_interval_in_bytes_, new_context_index, thread_count_, task_queue_, main_task_queue_, completed_threads_));
 		switch (add_task_result) {
-		case max::TaskQueue::AddTaskError::Okay:
+		case max::Hardware::CPU::TaskQueue::AddTaskError::Okay:
 			break;
-		case max::TaskQueue::AddTaskError::ShuttingDown:
-		case max::TaskQueue::AddTaskError::CouldNotSetEvent:
+		case max::Hardware::CPU::TaskQueue::AddTaskError::ShuttingDown:
+		case max::Hardware::CPU::TaskQueue::AddTaskError::CouldNotSetEvent:
 			return;
 		}
 
@@ -100,7 +100,7 @@ namespace FileReadSpeedTest {
 
 	}
 
-	Finished::Finished(size_t* completed_threads, size_t thread_count, max::TaskQueue* main_task_queue) noexcept
+	Finished::Finished(size_t* completed_threads, size_t thread_count, max::Hardware::CPU::TaskQueue* main_task_queue) noexcept
 		: completed_threads_(std::move(completed_threads))
 		, thread_count_(std::move(thread_count))
 		, main_task_queue_(std::move(main_task_queue))

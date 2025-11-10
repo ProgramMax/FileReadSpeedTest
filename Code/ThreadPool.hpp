@@ -8,16 +8,16 @@
 #include <optional>
 #include <vector>
 
-#include "TaskThread.hpp"
+#include <max/Hardware/CPU/TaskThread.hpp>
 
 namespace FileReadSpeedTest {
 
 	class ThreadPool {
 	public:
 
-		explicit ThreadPool(std::vector<TaskThread> task_threads) noexcept;
+		explicit ThreadPool(std::vector<max::Hardware::CPU::TaskThread> task_threads) noexcept;
 
-		std::vector<TaskThread> task_threads_;
+		std::vector<max::Hardware::CPU::TaskThread> task_threads_;
 
 	};
 
