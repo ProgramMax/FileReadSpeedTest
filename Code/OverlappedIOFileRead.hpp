@@ -9,6 +9,7 @@
 #include <expected>
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <vector>
 #include <utility>
 
@@ -77,7 +78,7 @@ namespace FileReadSpeedTest {
 		CouldNotGetFileSize,
 		CouldNotCreateIOContexts,
 	};
-	std::expected<OverlappedIOFileRead, PrepareToReadFileError> PrepareToReadFile(LPCSTR file_name, DWORD worker_thread_count) noexcept;
+	std::expected<OverlappedIOFileRead, PrepareToReadFileError> PrepareToReadFile(std::string_view file_name, DWORD worker_thread_count) noexcept;
 
 	// Returns std::nullopt if the new offset would be past the end of the file.
 	std::optional<LARGE_INTEGER> GetNewReadOffset(LARGE_INTEGER file_size, LARGE_INTEGER current_read_start, size_t buffer_interval_in_bytes) noexcept;

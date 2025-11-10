@@ -26,6 +26,7 @@
     <ClCompile Include="..\..\Code\OverlappedIOFileReadTask.cpp" />
     <ClCompile Include="..\..\Code\ThreadPool.cpp" />
     <ClCompile Include="..\..\Code\Win32Types.cpp" />
+    <ClCompile Include="..\..\Dependencies\max\Containers\StateMachine\StringInput.cpp" />
     <ClCompile Include="..\..\Dependencies\max\Hardware\CPU\Task.cpp" />
     <ClCompile Include="..\..\Dependencies\max\Hardware\CPU\TaskQueue.cpp" />
     <ClCompile Include="..\..\Dependencies\max\Hardware\CPU\TaskThread.cpp" />
@@ -37,9 +38,22 @@
     <ClInclude Include="..\..\Code\OverlappedIOFileReadTask.hpp" />
     <ClInclude Include="..\..\Code\ThreadPool.hpp" />
     <ClInclude Include="..\..\Code\Win32Types.hpp" />
+    <ClInclude Include="..\..\Dependencies\max\Containers\StateMachine\AnythingMatcher.hpp" />
+    <ClInclude Include="..\..\Dependencies\max\Containers\StateMachine\Node.hpp" />
+    <ClInclude Include="..\..\Dependencies\max\Containers\StateMachine\NumberInput.hpp" />
+    <ClInclude Include="..\..\Dependencies\max\Containers\StateMachine\RangeMatcher.hpp" />
+    <ClInclude Include="..\..\Dependencies\max\Containers\StateMachine\StateMachine.hpp" />
+    <ClInclude Include="..\..\Dependencies\max\Containers\StateMachine\StringInput.hpp" />
+    <ClInclude Include="..\..\Dependencies\max\Containers\StateMachine\StringMatcher.hpp" />
+    <ClInclude Include="..\..\Dependencies\max\Containers\StateMachine\Transition.hpp" />
     <ClInclude Include="..\..\Dependencies\max\Hardware\CPU\Task.hpp" />
     <ClInclude Include="..\..\Dependencies\max\Hardware\CPU\TaskQueue.hpp" />
     <ClInclude Include="..\..\Dependencies\max\Hardware\CPU\TaskThread.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Dependencies\max\Containers\StateMachine\AnythingMatcher.inl" />
+    <None Include="..\..\Dependencies\max\Containers\StateMachine\NumberInput.inl" />
+    <None Include="..\..\Dependencies\max\Containers\StateMachine\RangeMatcher.inl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
@@ -94,16 +108,16 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>$(SolutionDir)\..\..\Dependencies\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\..\..\Dependencies\;$(SolutionDir)\..\..\Dependencies\maxStateMachine\Code\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>$(SolutionDir)\..\..\Dependencies\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\..\..\Dependencies\;$(SolutionDir)\..\..\Dependencies\maxStateMachine\Code\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(SolutionDir)\..\..\Dependencies\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\..\..\Dependencies\;$(SolutionDir)\..\..\Dependencies\maxStateMachine\Code\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(SolutionDir)\..\..\Dependencies\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\..\..\Dependencies\;$(SolutionDir)\..\..\Dependencies\maxStateMachine\Code\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -112,6 +126,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -127,6 +142,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -142,6 +158,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -157,6 +174,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
+      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

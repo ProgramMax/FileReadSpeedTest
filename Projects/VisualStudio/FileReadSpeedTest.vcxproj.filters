@@ -15,6 +15,9 @@
     <ClCompile Include="..\..\Dependencies\max\TaskQueue.cpp">
       <Filter>Dependencies\max</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Dependencies\maxStateMachine\Code\maxStateMachine\StringInput.cpp">
+      <Filter>Dependencies\maxStateMachine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Code\OSAllocator.hpp" />
@@ -30,6 +33,30 @@
     <ClInclude Include="..\..\Dependencies\max\TaskQueue.hpp">
       <Filter>Dependencies\max</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Dependencies\maxStateMachine\Code\maxStateMachine\Node.hpp">
+      <Filter>Dependencies\maxStateMachine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Dependencies\maxStateMachine\Code\maxStateMachine\NumberInput.hpp">
+      <Filter>Dependencies\maxStateMachine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Dependencies\maxStateMachine\Code\maxStateMachine\RangeMatcher.hpp">
+      <Filter>Dependencies\maxStateMachine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Dependencies\maxStateMachine\Code\maxStateMachine\StateMachine.hpp">
+      <Filter>Dependencies\maxStateMachine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Dependencies\maxStateMachine\Code\maxStateMachine\StringInput.hpp">
+      <Filter>Dependencies\maxStateMachine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Dependencies\maxStateMachine\Code\maxStateMachine\StringMatcher.hpp">
+      <Filter>Dependencies\maxStateMachine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Dependencies\maxStateMachine\Code\maxStateMachine\Transition.hpp">
+      <Filter>Dependencies\maxStateMachine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Dependencies\maxStateMachine\Code\maxStateMachine\AnythingMatcher.hpp">
+      <Filter>Dependencies\maxStateMachine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Dependencies">
@@ -38,5 +65,22 @@
     <Filter Include="Dependencies\max">
       <UniqueIdentifier>{cd642f76-9813-4768-99ac-f6e373898e06}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Dependencies\maxStateMachine">
+      <UniqueIdentifier>{24f72ca7-35b0-486f-a23a-2a279b7749f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dependencies\max\Testing">
+      <UniqueIdentifier>{f8147b00-f31a-4f65-ab91-577d0c792f60}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Dependencies\maxStateMachine\Code\maxStateMachine\NumberInput.inl">
+      <Filter>Dependencies\maxStateMachine</Filter>
+    </None>
+    <None Include="..\..\Dependencies\maxStateMachine\Code\maxStateMachine\RangeMatcher.inl">
+      <Filter>Dependencies\maxStateMachine</Filter>
+    </None>
+    <None Include="..\..\Dependencies\maxStateMachine\Code\maxStateMachine\AnythingMatcher.inl">
+      <Filter>Dependencies\maxStateMachine</Filter>
+    </None>
   </ItemGroup>
 </Project>

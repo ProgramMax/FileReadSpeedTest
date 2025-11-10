@@ -1,6 +1,12 @@
+// Copyright 2025, The max Contributors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 #include <utility>
 
-namespace maxStateMachine {
+namespace max {
+namespace Containers {
+namespace StateMachine {
 
 	template<typename T>
 	constexpr RangeMatcher<T>::RangeMatcher(T lower_bound, T upper_bound) noexcept
@@ -13,4 +19,6 @@ namespace maxStateMachine {
 		return lower_bound_ <= input && input <= upper_bound_;
 	}
 
-} // namespace maxStateMachine
+} // namespace StateMachine
+} // namespace Containers
+} // namespace max
