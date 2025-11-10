@@ -5,12 +5,38 @@
     <ClCompile Include="..\..\Code\OSAllocator.cpp" />
     <ClCompile Include="..\..\Code\OverlappedIOFileRead.cpp" />
     <ClCompile Include="..\..\Code\Win32Types.cpp" />
-    <ClCompile Include="..\..\Code\GetProcessorInformation.cpp" />
+    <ClCompile Include="..\..\Code\GetProcessorCoreInformation.cpp" />
+    <ClCompile Include="..\..\Code\OverlappedIOFileReadTask.cpp" />
+    <ClCompile Include="..\..\Code\ThreadPool.cpp" />
+    <ClCompile Include="..\..\Code\TaskThread.cpp" />
+    <ClCompile Include="..\..\Dependencies\max\Task.cpp">
+      <Filter>Dependencies\max</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Dependencies\max\TaskQueue.cpp">
+      <Filter>Dependencies\max</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Code\OSAllocator.hpp" />
     <ClInclude Include="..\..\Code\OverlappedIOFileRead.hpp" />
     <ClInclude Include="..\..\Code\Win32Types.hpp" />
-    <ClInclude Include="..\..\Code\GetProcessorInformation.hpp" />
+    <ClInclude Include="..\..\Code\GetProcessorCoreInformation.hpp" />
+    <ClInclude Include="..\..\Code\OverlappedIOFileReadTask.hpp" />
+    <ClInclude Include="..\..\Code\ThreadPool.hpp" />
+    <ClInclude Include="..\..\Code\TaskThread.hpp" />
+    <ClInclude Include="..\..\Dependencies\max\Task.hpp">
+      <Filter>Dependencies\max</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Dependencies\max\TaskQueue.hpp">
+      <Filter>Dependencies\max</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Dependencies">
+      <UniqueIdentifier>{ff4362d7-e365-4968-8055-d1183bf5e30e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dependencies\max">
+      <UniqueIdentifier>{cd642f76-9813-4768-99ac-f6e373898e06}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

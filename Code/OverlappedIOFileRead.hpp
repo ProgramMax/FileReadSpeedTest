@@ -25,9 +25,7 @@
 
 namespace FileReadSpeedTest {
 
-	//using OverlappedIOFile = SpecificHandleObject;
 	using CompletionPort = SpecificHandleObject;
-	using Thread = SpecificHandleObject;
 
 	struct OverlappedIOFile : public SpecificHandleObject {
 
@@ -40,17 +38,8 @@ namespace FileReadSpeedTest {
 
 	};
 
-	class ThreadPool {
-	public:
-
-		explicit ThreadPool(std::vector<Thread> threads) noexcept;
-
-		std::vector<Thread> threads_;
-
-	};
-
 	struct IOContext {
-		IOContext(OVERLAPPED overlapped, HANDLE file_handle, OSAllocation buffer, DWORD bytes_to_read, DWORD file_offset) noexcept;
+		explicit IOContext(OVERLAPPED overlapped, HANDLE file_handle, OSAllocation buffer, DWORD bytes_to_read, DWORD file_offset) noexcept;
 
 		OVERLAPPED overlapped_;
 		HANDLE file_handle_;
@@ -67,16 +56,16 @@ namespace FileReadSpeedTest {
 	class OverlappedIOFileRead {
 	public:
 
-		explicit OverlappedIOFileRead(OverlappedIOFile overlapped_io_file, CompletionPort completion_port, ThreadPool thread_pool, std::vector<IOContext> contexts) noexcept;
+		explicit OverlappedIOFileRead(OverlappedIOFile overlapped_io_file, CompletionPort completion_port, std::vector<IOContext> contexts, LARGE_INTEGER file_size) noexcept;
 
 		void Read() noexcept;
 		void WaitForThreadsToFinish() noexcept;
 
 		OverlappedIOFile overlapped_io_file_;
 		CompletionPort completion_port_;
-		ThreadPool thread_pool_;
 		// TODO: Put contexts in their own cache line so there isn't cache contention
 		std::vector<IOContext> contexts_;
+		LARGE_INTEGER file_size_;
 		std::chrono::time_point<std::chrono::high_resolution_clock> read_issue_time_;
 	
 	};
@@ -89,6 +78,9 @@ namespace FileReadSpeedTest {
 		CouldNotCreateIOContexts,
 	};
 	std::expected<OverlappedIOFileRead, PrepareToReadFileError> PrepareToReadFile(LPCSTR file_name, DWORD worker_thread_count) noexcept;
+
+	// Returns std::nullopt if the new offset would be past the end of the file.
+	std::optional<LARGE_INTEGER> GetNewReadOffset(LARGE_INTEGER file_size, LARGE_INTEGER current_read_start, size_t buffer_interval_in_bytes) noexcept;
 
 } // namespace FileReadSpeedTest
 

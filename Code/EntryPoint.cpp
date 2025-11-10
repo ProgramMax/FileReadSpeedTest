@@ -4,45 +4,98 @@
 
 #include <cstdint>
 #include <iostream>
+#include <thread>
 
-#include "GetProcessorCoreInformation.hpp"
+#include "ThreadPool.hpp"
 #include "OverlappedIOFileRead.hpp"
+#include "OverlappedIOFileReadTask.hpp"
 
 int main(int argc, const char * argv[]) {
+	// Check command line parameters.
 	if (argc != 2) {
 		std::cerr << "Error: No file provided.\n";
 		std::cerr << "Use the form: FileReadSpeedTest.exe C:\\my\\file.txt" << std::endl;
 		return -1;
 	}
 
-	auto processor_core_information = FileReadSpeedTest::GetProcessorCoreInformation();
-	if (!processor_core_information.has_value()) {
-		std::cerr << "Error: Could not find processor information." << std::endl;
+
+	// Notify user of clock stability.
+	if (std::chrono::high_resolution_clock::is_steady) {
+		std::cout << "Clock is steady" << std::endl;
+	} else {
+		std::cout << "Clock is not steady" << std::endl;
+	}
+
+
+	// Create thread pool.
+	// Some workloads are inherently serial and may not benefit from additional threads.
+	// Workloads that may benefit could require heavy or light processing.
+	// All of this determines the type and quantity of cores to be used.
+	auto thread_pool = FileReadSpeedTest::CreateThreadPool();
+	if (!thread_pool.has_value()) {
+		std::cerr << "Could not create thread pool\n";
 		return -1;
 	}
+	size_t worker_thread_count = thread_pool->task_threads_.size();
+	std::cout << "Worker thread count: " << worker_thread_count << std::endl;
 
-	int16_t max_efficiency = -1;
-	uint16_t max_efficiency_core_count = 0;
-	for (auto& core_information : *processor_core_information) {
-		std::cout << "CPU cores: " << core_information.count_ << " @ performance class: " << core_information.efficiency_class_;
-		if (core_information.has_hyperthreading_ != 0) {
-			std::cout << " (with hyperthreading)";
-		}
 
-		if (core_information.efficiency_class_ > max_efficiency) {
-			max_efficiency = core_information.efficiency_class_;
-			max_efficiency_core_count = core_information.count_;
-		}
-		std::cout << std::endl;
-	}
 
-	auto overlapped_io_file_read = FileReadSpeedTest::PrepareToReadFile(argv[1], max_efficiency_core_count);
+	// Prepare to read the file.
+	auto overlapped_io_file_read = FileReadSpeedTest::PrepareToReadFile(argv[1], worker_thread_count);
 	if (!overlapped_io_file_read.has_value()) {
-		std::cerr << "Error";
+		std::cerr << "Error reading file\n";
 		return -1;
 	}
+
+
+	// Create main task queue to receive completion notifications
+	auto main_task_queue = max::Hardware::CPU::CreateTaskQueue();
+	if (!main_task_queue.has_value()) {
+		std::cerr << "Could not create main task queue\n";
+		return -1;
+	}
+	size_t completed_threads = 0;
+	
+
+	// Issue initial reads.
 	overlapped_io_file_read->Read();
-	overlapped_io_file_read->WaitForThreadsToFinish();
+
+
+	// Add initial read tasks to the thread pool
+	size_t thread_count = thread_pool->task_threads_.size();
+	size_t buffer_size = overlapped_io_file_read->contexts_[0].bytes_to_read_;
+	LARGE_INTEGER current_read_start = {};
+	size_t i = 0;
+	for (auto& thread: thread_pool->task_threads_) {
+		auto add_task_result = thread.task_queue_->AddTask(std::make_unique<FileReadSpeedTest::OverlappedIOFileReadTask>(&overlapped_io_file_read.value(), current_read_start, thread_count * buffer_size, i, thread_count, thread.task_queue_.get(), main_task_queue->get(), &completed_threads));
+		switch (add_task_result) {
+		case max::Hardware::CPU::TaskQueue::AddTaskError::Okay:
+			break;
+		case max::Hardware::CPU::TaskQueue::AddTaskError::ShuttingDown:
+		case max::Hardware::CPU::TaskQueue::AddTaskError::CouldNotSetEvent:
+			return -1;
+		}
+
+		current_read_start.QuadPart += buffer_size;
+		i++;
+	}
+
+
+	// Wait for all tasks to be complete.
+	// TODO: Currently, the Shutdown is queued up before the follow-up tasks.
+	max::Hardware::CPU::TaskRunnerLoop(main_task_queue->get());
+
+
+
+	// Shutdown thread pool. Wait for the shutdown to complete.
+	for (auto& thread: thread_pool->task_threads_) {
+		thread.task_queue_->Shutdown();
+	}
+	for (auto& thread: thread_pool->task_threads_) {
+		thread.thread_.join();
+	}
+
 
 	return 0;
 }
