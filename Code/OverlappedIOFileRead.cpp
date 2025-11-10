@@ -186,8 +186,8 @@ namespace FileReadSpeedTest {
 		}
 	}
 
-	std::expected<OverlappedIOFileRead, PrepareToReadFileError> PrepareToReadFile(LPCSTR file_name, DWORD worker_thread_count) noexcept {
-		auto file = CreateOverlappedIOFile(file_name);
+	std::expected<OverlappedIOFileRead, PrepareToReadFileError> PrepareToReadFile(std::string_view file_name, DWORD worker_thread_count) noexcept {
+		auto file = CreateOverlappedIOFile(file_name.data());
 		if (!file.has_value()) {
 			return std::unexpected{PrepareToReadFileError::CouldNotOpenFile};
 		}

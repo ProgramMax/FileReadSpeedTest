@@ -1,10 +1,16 @@
-#ifndef MAXSTATEMACHINE_STATEMACHINE_HPP
-#define MAXSTATEMACHINE_STATEMACHINE_HPP
+// Copyright 2025, The max Contributors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef MAX_CONTAINERS_STATEMACHINE_STATEMACHINE_HPP
+#define MAX_CONTAINERS_STATEMACHINE_STATEMACHINE_HPP
 
 #include <tuple>
 #include <utility>
 
-namespace maxStateMachine {
+namespace max {
+namespace Containers {
+namespace StateMachine {
 
 	template<typename... NodeTypes>
 	class StateMachine {
@@ -39,6 +45,8 @@ namespace maxStateMachine {
 
 	};
 
-} // namespace maxStateMachine
+} // namespace StateMachine
+} // namespace Containers
+} // namespace max
 
-#endif // #ifndef MAXSTATEMACHINE_STATEMACHINE_HPP
+#endif // #ifndef MAX_CONTAINERS_STATEMACHINE_STATEMACHINE_HPP

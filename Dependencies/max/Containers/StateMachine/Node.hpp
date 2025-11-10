@@ -1,14 +1,20 @@
-#ifndef MAXSTATEMACHINE_NODE_HPP
-#define MAXSTATEMACHINE_NODE_HPP
+// Copyright 2025, The max Contributors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef MAX_CONTAINERS_STATEMACHINE_NODE_HPP
+#define MAX_CONTAINERS_STATEMACHINE_NODE_HPP
 
 #include <optional>
 #include <tuple>
 #include <type_traits>
 #include <utility>
 
-#include <maxStateMachine/Transition.hpp>
+#include <max/Containers/StateMachine/Transition.hpp>
 
-namespace maxStateMachine {
+namespace max {
+namespace Containers {
+namespace StateMachine {
 
 	template<typename... TransitionTypes>
 	class Node {
@@ -19,7 +25,7 @@ namespace maxStateMachine {
 		{}
 
 		template<typename T>
-		constexpr std::optional<size_t> AttemptTransition(T input) noexcept {
+		constexpr std::optional<size_t> AttemptTransition(const T& input) noexcept {
 			auto transition_happened = false;
 			auto new_node_index = std::optional<size_t>{std::nullopt};
 
@@ -53,6 +59,8 @@ namespace maxStateMachine {
 		return Node{std::make_tuple(std::move(outbound_transitions) ...)};
 	}
 
-} // namespace maxStateMachine
+} // namespace StateMachine
+} // namespace Containers
+} // namespace max
 
-#endif // #ifndef MAXSTATEMACHINE_NODE_HPP
+#endif // #ifndef MAX_CONTAINERS_STATEMACHINE_NODE_HPP
