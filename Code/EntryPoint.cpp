@@ -3,59 +3,40 @@
 // found in the LICENSE file.
 
 #include <cstdint>
+#include <cstdlib>
 #include <iostream>
-#include <optional>
-#include <string_view>
 #include <thread>
 #include <tuple>
 #include <utility>
+#include <variant>
 
 #include "ThreadPool.hpp"
 #include "OverlappedIOFileRead.hpp"
 #include "OverlappedIOFileReadTask.hpp"
+#include "CommandLineParameters.hpp"
 
-#include <max/Containers/StateMachine/AnythingMatcher.hpp>
-#include <max/Containers/StateMachine/Node.hpp>
-#include <max/Containers/StateMachine/StateMachine.hpp>
-#include <max/Containers/StateMachine/StringMatcher.hpp>
-#include <max/Containers/StateMachine/Transition.hpp>
+namespace {
+
+	struct ActionExecutor {
+
+		void operator()(const FileReadSpeedTest::SuccessAction& action) const noexcept {
+			// Do nothing. Continue execution.
+		}
+
+		void operator()(const FileReadSpeedTest::ErrorAction& action) const noexcept {
+			std::cerr << action.error_message_;
+			std::exit(-1);
+		}
+
+	};
+
+} // anonymous namespace
 
 int main(int argc, const char * argv[]) {
-	// Create state machine for parsing command line parameters
-	auto program_name_callback = [](const std::string_view& input) {
-		return size_t{1};
-	};
-	auto program_name_transition = max::Containers::StateMachine::Transition{max::Containers::StateMachine::AnythingMatcher<std::string_view>{}, std::move(program_name_callback)};
-	auto start_node = max::Containers::StateMachine::MakeNode(std::move(program_name_transition));
+	auto action = FileReadSpeedTest::ProcessCommandLineParameters(argc, argv);
+	std::visit(ActionExecutor{}, action);
 
-	auto input_flag_callback = [](const std::string_view& input) {
-		return size_t{2};
-	};
-	auto input_flag_transition = max::Containers::StateMachine::Transition{max::Containers::StateMachine::StringMatcher{std::string_view{"-i"}}, std::move(input_flag_callback)};
-	auto awaiting_flags_node = max::Containers::StateMachine::MakeNode(std::move(input_flag_transition));
-
-	auto input_file = std::optional<std::string_view>{std::nullopt};
-	auto input_file_callback = [&input_file](const std::string_view& input) {
-		input_file = input;
-		return size_t{1};
-	};
-	auto input_file_transition = max::Containers::StateMachine::Transition{max::Containers::StateMachine::AnythingMatcher<std::string_view>{}, std::move(input_file_callback)};
-	auto awaiting_input_file_node = max::Containers::StateMachine::MakeNode(std::move(input_file_transition));
-
-	auto state_machine = max::Containers::StateMachine::StateMachine{std::make_tuple(std::move(start_node), std::move(awaiting_flags_node), std::move(awaiting_input_file_node))};
-
-	for (int i = 0; i < argc; i++) {
-		state_machine.AttemptTransition(std::string_view{argv[i]});
-	}
-
-
-
-	// Check command line parameters.
-	if (!input_file) {
-		std::cerr << "Error: No file provided.\n";
-		std::cerr << "Use the form: FileReadSpeedTest.exe -i C:\\my\\file.txt" << std::endl;
-		return -1;
-	}
+	auto input_file = std::move(std::get<FileReadSpeedTest::SuccessAction>(action).file_path_);
 
 
 	// Notify user of clock stability.
@@ -81,7 +62,7 @@ int main(int argc, const char * argv[]) {
 
 
 	// Prepare to read the file.
-	auto overlapped_io_file_read = FileReadSpeedTest::PrepareToReadFile(*input_file, worker_thread_count);
+	auto overlapped_io_file_read = FileReadSpeedTest::PrepareToReadFile(input_file, worker_thread_count);
 	if (!overlapped_io_file_read.has_value()) {
 		std::cerr << "Error reading file\n";
 		return -1;

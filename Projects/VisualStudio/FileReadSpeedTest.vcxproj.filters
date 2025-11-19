@@ -8,16 +8,22 @@
     <ClCompile Include="..\..\Code\GetProcessorCoreInformation.cpp" />
     <ClCompile Include="..\..\Code\OverlappedIOFileReadTask.cpp" />
     <ClCompile Include="..\..\Code\ThreadPool.cpp" />
-    <ClCompile Include="..\..\Code\TaskThread.cpp" />
-    <ClCompile Include="..\..\Dependencies\max\Task.cpp">
-      <Filter>Dependencies\max</Filter>
+    <ClCompile Include="..\..\Dependencies\max\Containers\StateMachine\StringInput.cpp">
+      <Filter>Dependencies\max\Containers\StateMachine</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Dependencies\max\TaskQueue.cpp">
-      <Filter>Dependencies\max</Filter>
+    <ClCompile Include="..\..\Dependencies\max\Testing\CoutResultPolicy.cpp">
+      <Filter>Dependencies\max\Testing</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Dependencies\maxStateMachine\Code\maxStateMachine\StringInput.cpp">
-      <Filter>Dependencies\maxStateMachine</Filter>
+    <ClCompile Include="..\..\Dependencies\max\Hardware\CPU\Task.cpp">
+      <Filter>Dependencies\max\Hardware\CPU</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Dependencies\max\Hardware\CPU\TaskQueue.cpp">
+      <Filter>Dependencies\max\Hardware\CPU</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Dependencies\max\Hardware\CPU\TaskThread.cpp">
+      <Filter>Dependencies\max\Hardware\CPU</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Code\CommandLineParameters.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Code\OSAllocator.hpp" />
@@ -26,37 +32,52 @@
     <ClInclude Include="..\..\Code\GetProcessorCoreInformation.hpp" />
     <ClInclude Include="..\..\Code\OverlappedIOFileReadTask.hpp" />
     <ClInclude Include="..\..\Code\ThreadPool.hpp" />
-    <ClInclude Include="..\..\Code\TaskThread.hpp" />
-    <ClInclude Include="..\..\Dependencies\max\Task.hpp">
-      <Filter>Dependencies\max</Filter>
+    <ClInclude Include="..\..\Dependencies\max\Containers\StateMachine\AnythingMatcher.hpp">
+      <Filter>Dependencies\max\Containers\StateMachine</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Dependencies\max\TaskQueue.hpp">
-      <Filter>Dependencies\max</Filter>
+    <ClInclude Include="..\..\Dependencies\max\Containers\StateMachine\Node.hpp">
+      <Filter>Dependencies\max\Containers\StateMachine</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Dependencies\maxStateMachine\Code\maxStateMachine\Node.hpp">
-      <Filter>Dependencies\maxStateMachine</Filter>
+    <ClInclude Include="..\..\Dependencies\max\Containers\StateMachine\NumberInput.hpp">
+      <Filter>Dependencies\max\Containers\StateMachine</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Dependencies\maxStateMachine\Code\maxStateMachine\NumberInput.hpp">
-      <Filter>Dependencies\maxStateMachine</Filter>
+    <ClInclude Include="..\..\Dependencies\max\Containers\StateMachine\RangeMatcher.hpp">
+      <Filter>Dependencies\max\Containers\StateMachine</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Dependencies\maxStateMachine\Code\maxStateMachine\RangeMatcher.hpp">
-      <Filter>Dependencies\maxStateMachine</Filter>
+    <ClInclude Include="..\..\Dependencies\max\Containers\StateMachine\StateMachine.hpp">
+      <Filter>Dependencies\max\Containers\StateMachine</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Dependencies\maxStateMachine\Code\maxStateMachine\StateMachine.hpp">
-      <Filter>Dependencies\maxStateMachine</Filter>
+    <ClInclude Include="..\..\Dependencies\max\Containers\StateMachine\StringInput.hpp">
+      <Filter>Dependencies\max\Containers\StateMachine</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Dependencies\maxStateMachine\Code\maxStateMachine\StringInput.hpp">
-      <Filter>Dependencies\maxStateMachine</Filter>
+    <ClInclude Include="..\..\Dependencies\max\Containers\StateMachine\StringMatcher.hpp">
+      <Filter>Dependencies\max\Containers\StateMachine</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Dependencies\maxStateMachine\Code\maxStateMachine\StringMatcher.hpp">
-      <Filter>Dependencies\maxStateMachine</Filter>
+    <ClInclude Include="..\..\Dependencies\max\Containers\StateMachine\Transition.hpp">
+      <Filter>Dependencies\max\Containers\StateMachine</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Dependencies\maxStateMachine\Code\maxStateMachine\Transition.hpp">
-      <Filter>Dependencies\maxStateMachine</Filter>
+    <ClInclude Include="..\..\Dependencies\max\Testing\CoutResultPolicy.hpp">
+      <Filter>Dependencies\max\Testing</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Dependencies\maxStateMachine\Code\maxStateMachine\AnythingMatcher.hpp">
-      <Filter>Dependencies\maxStateMachine</Filter>
+    <ClInclude Include="..\..\Dependencies\max\Testing\Test.hpp">
+      <Filter>Dependencies\max\Testing</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Dependencies\max\Testing\TestSuite.hpp">
+      <Filter>Dependencies\max\Testing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Dependencies\max\Hardware\CPU\Task.hpp">
+      <Filter>Dependencies\max\Hardware\CPU</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Dependencies\max\Hardware\CPU\TaskQueue.hpp">
+      <Filter>Dependencies\max\Hardware\CPU</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Dependencies\max\Hardware\CPU\TaskThread.hpp">
+      <Filter>Dependencies\max\Hardware\CPU</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Dependencies\max\Containers\StateMachine.hpp">
+      <Filter>Dependencies\max\Containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Code\CommandLineParameters.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Dependencies">
@@ -65,22 +86,37 @@
     <Filter Include="Dependencies\max">
       <UniqueIdentifier>{cd642f76-9813-4768-99ac-f6e373898e06}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Dependencies\maxStateMachine">
-      <UniqueIdentifier>{24f72ca7-35b0-486f-a23a-2a279b7749f0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Dependencies\max\Testing">
       <UniqueIdentifier>{f8147b00-f31a-4f65-ab91-577d0c792f60}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Dependencies\max\Hardware">
+      <UniqueIdentifier>{7b49179d-547b-4ae1-9104-dd20a7e384d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dependencies\max\Hardware\CPU">
+      <UniqueIdentifier>{0835d7b4-949b-4679-9cc3-c09965c9065d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dependencies\max\Containers">
+      <UniqueIdentifier>{1c81f89d-5ba6-4f7d-acbc-f6c81fdba4df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dependencies\max\Containers\StateMachine">
+      <UniqueIdentifier>{6515990a-843d-4b43-ad42-43c65c239cbe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\Dependencies\maxStateMachine\Code\maxStateMachine\NumberInput.inl">
-      <Filter>Dependencies\maxStateMachine</Filter>
+    <None Include="..\..\Dependencies\max\Containers\StateMachine\AnythingMatcher.inl">
+      <Filter>Dependencies\max\Containers\StateMachine</Filter>
     </None>
-    <None Include="..\..\Dependencies\maxStateMachine\Code\maxStateMachine\RangeMatcher.inl">
-      <Filter>Dependencies\maxStateMachine</Filter>
+    <None Include="..\..\Dependencies\max\Containers\StateMachine\NumberInput.inl">
+      <Filter>Dependencies\max\Containers\StateMachine</Filter>
     </None>
-    <None Include="..\..\Dependencies\maxStateMachine\Code\maxStateMachine\AnythingMatcher.inl">
-      <Filter>Dependencies\maxStateMachine</Filter>
+    <None Include="..\..\Dependencies\max\Containers\StateMachine\RangeMatcher.inl">
+      <Filter>Dependencies\max\Containers\StateMachine</Filter>
+    </None>
+    <None Include="..\..\Dependencies\max\Testing\Test.inl">
+      <Filter>Dependencies\max\Testing</Filter>
+    </None>
+    <None Include="..\..\Dependencies\max\Testing\TestSuite.inl">
+      <Filter>Dependencies\max\Testing</Filter>
     </None>
   </ItemGroup>
 </Project>
