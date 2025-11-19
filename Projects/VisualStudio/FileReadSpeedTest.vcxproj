@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Code\CommandLineParameters.cpp" />
     <ClCompile Include="..\..\Code\EntryPoint.cpp" />
     <ClCompile Include="..\..\Code\GetProcessorCoreInformation.cpp" />
     <ClCompile Include="..\..\Code\OSAllocator.cpp" />
@@ -30,14 +31,17 @@
     <ClCompile Include="..\..\Dependencies\max\Hardware\CPU\Task.cpp" />
     <ClCompile Include="..\..\Dependencies\max\Hardware\CPU\TaskQueue.cpp" />
     <ClCompile Include="..\..\Dependencies\max\Hardware\CPU\TaskThread.cpp" />
+    <ClCompile Include="..\..\Dependencies\max\Testing\CoutResultPolicy.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Code\CommandLineParameters.hpp" />
     <ClInclude Include="..\..\Code\GetProcessorCoreInformation.hpp" />
     <ClInclude Include="..\..\Code\OSAllocator.hpp" />
     <ClInclude Include="..\..\Code\OverlappedIOFileRead.hpp" />
     <ClInclude Include="..\..\Code\OverlappedIOFileReadTask.hpp" />
     <ClInclude Include="..\..\Code\ThreadPool.hpp" />
     <ClInclude Include="..\..\Code\Win32Types.hpp" />
+    <ClInclude Include="..\..\Dependencies\max\Containers\StateMachine.hpp" />
     <ClInclude Include="..\..\Dependencies\max\Containers\StateMachine\AnythingMatcher.hpp" />
     <ClInclude Include="..\..\Dependencies\max\Containers\StateMachine\Node.hpp" />
     <ClInclude Include="..\..\Dependencies\max\Containers\StateMachine\NumberInput.hpp" />
@@ -49,11 +53,16 @@
     <ClInclude Include="..\..\Dependencies\max\Hardware\CPU\Task.hpp" />
     <ClInclude Include="..\..\Dependencies\max\Hardware\CPU\TaskQueue.hpp" />
     <ClInclude Include="..\..\Dependencies\max\Hardware\CPU\TaskThread.hpp" />
+    <ClInclude Include="..\..\Dependencies\max\Testing\CoutResultPolicy.hpp" />
+    <ClInclude Include="..\..\Dependencies\max\Testing\Test.hpp" />
+    <ClInclude Include="..\..\Dependencies\max\Testing\TestSuite.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\Dependencies\max\Containers\StateMachine\AnythingMatcher.inl" />
     <None Include="..\..\Dependencies\max\Containers\StateMachine\NumberInput.inl" />
     <None Include="..\..\Dependencies\max\Containers\StateMachine\RangeMatcher.inl" />
+    <None Include="..\..\Dependencies\max\Testing\Test.inl" />
+    <None Include="..\..\Dependencies\max\Testing\TestSuite.inl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
