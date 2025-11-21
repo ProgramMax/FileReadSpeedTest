@@ -61,8 +61,32 @@ int main(int argc, const char * argv[]) {
 
 
 
+	// Open the file.
+	auto file = FileReadSpeedTest::CreateOverlappedIOFile(input_file.data());
+	if (!file.has_value()) {
+		std::cerr << "Error opening file\n";
+		return -1;
+	}
+
+
+	auto buffer_size = size_t{0};
+	auto command_line_buffer_size = std::get<FileReadSpeedTest::SuccessAction>(action).buffer_size_;
+	if (command_line_buffer_size.has_value()) {
+		buffer_size = *command_line_buffer_size;
+	} else {
+		auto buffer_size_optional = GetIdealBufferSize(*file);
+		if (!buffer_size_optional.has_value()) {
+			std::cerr << "Error finding ideal buffer size\n";
+			return -1;
+		}
+
+		buffer_size = *buffer_size_optional;
+	}
+
+
+
 	// Prepare to read the file.
-	auto overlapped_io_file_read = FileReadSpeedTest::PrepareToReadFile(input_file, worker_thread_count);
+	auto overlapped_io_file_read = FileReadSpeedTest::PrepareToReadFile(*file, worker_thread_count, buffer_size);
 	if (!overlapped_io_file_read.has_value()) {
 		std::cerr << "Error reading file\n";
 		return -1;
@@ -84,7 +108,6 @@ int main(int argc, const char * argv[]) {
 
 	// Add initial read tasks to the thread pool
 	size_t thread_count = thread_pool->task_threads_.size();
-	size_t buffer_size = overlapped_io_file_read->contexts_[0].bytes_to_read_;
 	LARGE_INTEGER current_read_start = {};
 	size_t i = 0;
 	for (auto& thread: thread_pool->task_threads_) {

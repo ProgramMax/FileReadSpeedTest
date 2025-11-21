@@ -21,20 +21,6 @@ namespace {
 
 	std::chrono::time_point<std::chrono::high_resolution_clock> pre_open_time_;
 
-
-	std::optional<FileReadSpeedTest::OverlappedIOFile> CreateOverlappedIOFile(LPCSTR file_name) noexcept {
-		pre_open_time_ = std::chrono::high_resolution_clock::now();
-		// Use FILE_FLAG_RANDOM_ACCESS instead of FILE_FLAG_SEQUENTIAL_SCAN for file formats where that is a better fit
-		// FILE_FLAG_NO_BUFFERING
-		HANDLE file_handle = CreateFileA(file_name, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_FLAG_OVERLAPPED | FILE_FLAG_SEQUENTIAL_SCAN | FILE_FLAG_NO_BUFFERING, NULL);
-		if (file_handle == INVALID_HANDLE_VALUE) {
-			// GetLastError
-			return std::nullopt;
-		}
-
-		return FileReadSpeedTest::OverlappedIOFile{std::move(file_handle)};
-	}
-
 	std::optional<FileReadSpeedTest::CompletionPort> CreateCompletionPort(FileReadSpeedTest::OverlappedIOFile& overlapped_io_file, DWORD worker_thread_count) noexcept {
 		HANDLE completion_port_handle = CreateIoCompletionPort(overlapped_io_file.handle_, NULL, 0, worker_thread_count);
 		if (completion_port_handle == NULL) {
@@ -105,6 +91,19 @@ namespace {
 } // anonymous namespace
 
 namespace FileReadSpeedTest {
+
+	std::optional<FileReadSpeedTest::OverlappedIOFile> CreateOverlappedIOFile(LPCSTR file_name) noexcept {
+		pre_open_time_ = std::chrono::high_resolution_clock::now();
+		// Use FILE_FLAG_RANDOM_ACCESS instead of FILE_FLAG_SEQUENTIAL_SCAN for file formats where that is a better fit
+		// FILE_FLAG_NO_BUFFERING
+		HANDLE file_handle = CreateFileA(file_name, GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_FLAG_OVERLAPPED | FILE_FLAG_SEQUENTIAL_SCAN | FILE_FLAG_NO_BUFFERING, NULL);
+		if (file_handle == INVALID_HANDLE_VALUE) {
+			// GetLastError
+			return std::nullopt;
+		}
+
+		return FileReadSpeedTest::OverlappedIOFile{std::move(file_handle)};
+	}
 
 	IOContext::IOContext(OVERLAPPED overlapped, HANDLE file_handle, OSAllocation buffer, DWORD bytes_to_read, DWORD file_offset) noexcept
 		: overlapped_(std::move(overlapped))
@@ -186,28 +185,11 @@ namespace FileReadSpeedTest {
 		}
 	}
 
-	std::expected<OverlappedIOFileRead, PrepareToReadFileError> PrepareToReadFile(std::string_view file_name, DWORD worker_thread_count) noexcept {
-		auto file = CreateOverlappedIOFile(file_name.data());
-		if (!file.has_value()) {
-			return std::unexpected{PrepareToReadFileError::CouldNotOpenFile};
-		}
-
-		// TODO: Print drive make & model
-		// TODO: Print filesystem info (format, block size)
-
-		LARGE_INTEGER file_size;
-		BOOL result = GetFileSizeEx(file->handle_, &file_size);
-		if (result == 0) {
-			// GetLastError
-			return std::unexpected{PrepareToReadFileError::CouldNotGetFileSize};
-		}
-
-		std::cout << "File size: " << file_size.QuadPart << std::endl;
-
+	std::optional<size_t> GetIdealBufferSize(const OverlappedIOFile& file) noexcept {
 		FILE_STORAGE_INFO file_storage_info = {};
-		result = GetFileInformationByHandleEx(file->handle_, FileStorageInfo, &file_storage_info, sizeof(file_storage_info));
+		BOOL result = GetFileInformationByHandleEx(file.handle_, FileStorageInfo, &file_storage_info, sizeof(file_storage_info));
 		if (result == FALSE) {
-			return std::unexpected{PrepareToReadFileError::CouldNotGetFileSize};
+			return std::nullopt;
 		}
 		unsigned long partition_block_size = file_storage_info.LogicalBytesPerSector;
 		// When doing writes instead of reads, prefer file_storage_info.PhysicalBytesPerSectorForPerformance;
@@ -216,8 +198,8 @@ namespace FileReadSpeedTest {
 		SYSTEM_INFO system_info;
 		GetSystemInfo(&system_info);
 		/*if (compiling for x86 or arm64) {
-			SYSTEM_INFO native_system_info;
-			GetNativeSystemInfo(&native_system_info);
+		SYSTEM_INFO native_system_info;
+		GetNativeSystemInfo(&native_system_info);
 		}*/
 		partition_block_size = system_info.dwPageSize;
 		// TODO: Confirm the page size is a multiple of the logical bytes per sector
@@ -227,8 +209,25 @@ namespace FileReadSpeedTest {
 		// TODO: Should we push the buffer size to 64 KiB?
 
 		std::cout << "Buffer size: " << partition_block_size << std::endl;
+		return partition_block_size;
+	}
 
-		auto completion_port = CreateCompletionPort(*file, worker_thread_count);
+
+	std::expected<OverlappedIOFileRead, PrepareToReadFileError> PrepareToReadFile(OverlappedIOFile& file, DWORD worker_thread_count, size_t buffer_size) noexcept {
+		// TODO: Print drive make & model
+		// TODO: Print filesystem info (format, block size)
+
+		LARGE_INTEGER file_size;
+		BOOL result = GetFileSizeEx(file.handle_, &file_size);
+		if (result == 0) {
+			// GetLastError
+			return std::unexpected{PrepareToReadFileError::CouldNotGetFileSize};
+		}
+
+		std::cout << "File size: " << file_size.QuadPart << std::endl;
+
+
+		auto completion_port = CreateCompletionPort(file, worker_thread_count);
 		if (!completion_port.has_value()) {
 			return std::unexpected{PrepareToReadFileError::CouldNotCreateCompletionPort};
 		}
@@ -244,12 +243,12 @@ namespace FileReadSpeedTest {
 		}
 		*/
 
-		auto io_contexts = CreateIOContexts(file_size, partition_block_size, *file);
+		auto io_contexts = CreateIOContexts(file_size, buffer_size, file);
 		if (!io_contexts.has_value()) {
 			return std::unexpected{PrepareToReadFileError::CouldNotCreateIOContexts};
 		}
 
-		return OverlappedIOFileRead(std::move(*file),
+		return OverlappedIOFileRead(std::move(file),
 		                            std::move(*completion_port),
 		                            std::move(*io_contexts),
 		                            std::move(file_size));

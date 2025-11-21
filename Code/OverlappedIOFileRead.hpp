@@ -39,6 +39,8 @@ namespace FileReadSpeedTest {
 
 	};
 
+	std::optional<FileReadSpeedTest::OverlappedIOFile> CreateOverlappedIOFile(LPCSTR file_name) noexcept;
+
 	struct IOContext {
 		explicit IOContext(OVERLAPPED overlapped, HANDLE file_handle, OSAllocation buffer, DWORD bytes_to_read, DWORD file_offset) noexcept;
 
@@ -71,6 +73,8 @@ namespace FileReadSpeedTest {
 	
 	};
 
+	std::optional<size_t> GetIdealBufferSize(const OverlappedIOFile& file) noexcept;
+
 	enum PrepareToReadFileError {
 		CouldNotOpenFile,
 		CouldNotCreateCompletionPort,
@@ -78,7 +82,7 @@ namespace FileReadSpeedTest {
 		CouldNotGetFileSize,
 		CouldNotCreateIOContexts,
 	};
-	std::expected<OverlappedIOFileRead, PrepareToReadFileError> PrepareToReadFile(std::string_view file_name, DWORD worker_thread_count) noexcept;
+	std::expected<OverlappedIOFileRead, PrepareToReadFileError> PrepareToReadFile(OverlappedIOFile& file, DWORD worker_thread_count, size_t buffer_size) noexcept;
 
 	// Returns std::nullopt if the new offset would be past the end of the file.
 	std::optional<LARGE_INTEGER> GetNewReadOffset(LARGE_INTEGER file_size, LARGE_INTEGER current_read_start, size_t buffer_interval_in_bytes) noexcept;
