@@ -21,7 +21,9 @@ namespace FileReadSpeedTest {
 
 	};
 
+	// Create as many threads as there are max efficiency cores
 	std::optional<ThreadPool> CreateThreadPool() noexcept;
+	std::optional<ThreadPool> CreateThreadPool(size_t thread_count) noexcept;
 
 } // namespace FileReadSpeedTest
 
