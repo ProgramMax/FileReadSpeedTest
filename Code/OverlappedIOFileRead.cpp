@@ -208,7 +208,6 @@ namespace FileReadSpeedTest {
 		// https://devblogs.microsoft.com/oldnewthing/20031008-00/?p=42223
 		// TODO: Should we push the buffer size to 64 KiB?
 
-		std::cout << "Buffer size: " << partition_block_size << std::endl;
 		return partition_block_size;
 	}
 

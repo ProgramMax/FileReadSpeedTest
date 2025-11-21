@@ -73,6 +73,7 @@ int main(int argc, const char * argv[]) {
 	auto command_line_buffer_size = std::get<FileReadSpeedTest::SuccessAction>(action).buffer_size_;
 	if (command_line_buffer_size.has_value()) {
 		buffer_size = *command_line_buffer_size;
+		std::cout << "Using supplied buffer size: " << buffer_size << std::endl;
 	} else {
 		auto buffer_size_optional = GetIdealBufferSize(*file);
 		if (!buffer_size_optional.has_value()) {
@@ -81,6 +82,7 @@ int main(int argc, const char * argv[]) {
 		}
 
 		buffer_size = *buffer_size_optional;
+		std::cout << "Using calculated ideal buffer size: " << buffer_size << std::endl;
 	}
 
 
