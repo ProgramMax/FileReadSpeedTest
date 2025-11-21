@@ -5,6 +5,7 @@
 #ifndef FILEREADSPEEDTEST_COMMANDLINEPARAMETERS_HPP
 #define FILEREADSPEEDTEST_COMMANDLINEPARAMETERS_HPP
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <variant>
@@ -13,6 +14,7 @@ namespace FileReadSpeedTest {
 
 	struct SuccessAction {
 		std::string_view file_path_;
+		std::optional<size_t> buffer_size_;
 	};
 
 	struct ErrorAction {
