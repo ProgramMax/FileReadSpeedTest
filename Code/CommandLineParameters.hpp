@@ -15,6 +15,7 @@ namespace FileReadSpeedTest {
 	struct SuccessAction {
 		std::string_view file_path_;
 		std::optional<size_t> buffer_size_;
+		std::optional<size_t> thread_count_;
 	};
 
 	struct ErrorAction {

@@ -35,8 +35,8 @@ namespace {
 int main(int argc, const char * argv[]) {
 	auto action = FileReadSpeedTest::ProcessCommandLineParameters(argc, argv);
 	std::visit(ActionExecutor{}, action);
-
 	auto input_file = std::move(std::get<FileReadSpeedTest::SuccessAction>(action).file_path_);
+
 
 
 	// Notify user of clock stability.
@@ -47,11 +47,18 @@ int main(int argc, const char * argv[]) {
 	}
 
 
+
 	// Create thread pool.
-	// Some workloads are inherently serial and may not benefit from additional threads.
-	// Workloads that may benefit could require heavy or light processing.
-	// All of this determines the type and quantity of cores to be used.
-	auto thread_pool = FileReadSpeedTest::CreateThreadPool();
+	auto thread_pool = std::optional<FileReadSpeedTest::ThreadPool>{std::nullopt};
+	auto command_line_thread_count = std::get<FileReadSpeedTest::SuccessAction>(action).thread_count_;
+	if (command_line_thread_count.has_value()) {
+		thread_pool = FileReadSpeedTest::CreateThreadPool(*command_line_thread_count);
+	} else {
+		// Some workloads are inherently serial and may not benefit from additional threads.
+		// Workloads that may benefit could require heavy or light processing.
+		// All of this determines the type and quantity of cores to be used.
+		thread_pool = FileReadSpeedTest::CreateThreadPool();
+	}
 	if (!thread_pool.has_value()) {
 		std::cerr << "Could not create thread pool\n";
 		return -1;

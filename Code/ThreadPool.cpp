@@ -39,11 +39,14 @@ namespace FileReadSpeedTest {
 			std::cout << std::endl;
 		}
 
+		return CreateThreadPool(max_efficiency_core_count);
+	}
 
+	std::optional<ThreadPool> CreateThreadPool(size_t thread_count) noexcept {
 		// Create task threads.
 		std::vector<max::Hardware::CPU::TaskThread> task_threads;
 
-		for (size_t i = 0; i < max_efficiency_core_count; i++) {
+		for (size_t i = 0; i < thread_count; i++) {
 			auto task_thread = max::Hardware::CPU::CreateTaskThread();
 			if (!task_thread.has_value()) {
 				return std::nullopt;
