@@ -69,6 +69,10 @@ int main(int argc, const char * argv[]) {
 	}
 
 
+	// TODO: Anecdotally, it seems like a smaller buffer 0 gets the initial response faster.
+	// It might be good for buffer 0 to be smaller (512 bytes?) just to start the ball rolling while
+	// buffer 1+ are the ideal throughput size.
+	// Test this.
 	auto buffer_size = size_t{0};
 	auto command_line_buffer_size = std::get<FileReadSpeedTest::SuccessAction>(action).buffer_size_;
 	if (command_line_buffer_size.has_value()) {
