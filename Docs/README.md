@@ -1,6 +1,6 @@
 # FileReadSpeedTest
 
-FileReadSpeedTest is a tool for measuring file read speeds so it can later be mimicked.
+FileReadSpeedTest is a tool for capturing file read speeds so the behavior can be analyzed and later replayed for performance testing against real-world scenarios.
 
 This tool finds the optimal buffer size for a given drive & file system, then reports the time taken for each buffer to be loaded.
 This allows replaying the loading times, which enabled realistic performance testing for processing the loaded file.
