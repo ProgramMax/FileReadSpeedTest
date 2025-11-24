@@ -64,6 +64,8 @@ namespace FileReadSpeedTest {
 		void Read() noexcept;
 		void WaitForThreadsToFinish() noexcept;
 
+		void PrintResults() noexcept;
+
 		OverlappedIOFile overlapped_io_file_;
 		CompletionPort completion_port_;
 		// TODO: Put contexts in their own cache line so there isn't cache contention

@@ -153,5 +153,8 @@ int main(int argc, const char * argv[]) {
 	}
 
 
+	overlapped_io_file_read->PrintResults();
+
+
 	return 0;
 }
