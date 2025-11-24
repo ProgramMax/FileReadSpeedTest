@@ -68,6 +68,9 @@ int main(int argc, const char * argv[]) {
 
 
 
+
+
+
 	// Open the file.
 	auto file = FileReadSpeedTest::CreateOverlappedIOFile(input_file.data());
 	if (!file.has_value()) {
@@ -98,12 +101,28 @@ int main(int argc, const char * argv[]) {
 
 
 
+	// Get queue depth
+	auto queue_depth = size_t{0};
+	auto command_line_queue_depth = std::get<FileReadSpeedTest::SuccessAction>(action).queue_depth_;
+	if (command_line_queue_depth.has_value()) {
+		queue_depth = *command_line_queue_depth;
+		std::cout << "Using supplied queue_depth: " << queue_depth << std::endl;
+	} else {
+		// TODO: There is probably an ideal queue depth.
+		// Research this.
+		queue_depth = thread_pool->task_threads_.size();
+		std::cout << "Using queue depth = thread count: " << queue_depth << std::endl;
+	}
+
+
+
 	// Prepare to read the file.
 	auto overlapped_io_file_read = FileReadSpeedTest::PrepareToReadFile(*file, worker_thread_count, buffer_size);
 	if (!overlapped_io_file_read.has_value()) {
 		std::cerr << "Error reading file\n";
 		return -1;
 	}
+
 
 
 	// Create main task queue to receive completion notifications
@@ -115,16 +134,13 @@ int main(int argc, const char * argv[]) {
 	size_t completed_threads = 0;
 	
 
-	// Issue initial reads.
-	overlapped_io_file_read->Read();
-
 
 	// Add initial read tasks to the thread pool
 	size_t thread_count = thread_pool->task_threads_.size();
 	LARGE_INTEGER current_read_start = {};
-	size_t i = 0;
-	for (auto& thread: thread_pool->task_threads_) {
-		auto add_task_result = thread.task_queue_->AddTask(std::make_unique<FileReadSpeedTest::OverlappedIOFileReadTask>(&overlapped_io_file_read.value(), current_read_start, thread_count * buffer_size, i, thread_count, thread.task_queue_.get(), main_task_queue->get(), &completed_threads));
+	auto i = size_t{0};
+	for (auto& thread : thread_pool->task_threads_) {
+		auto add_task_result = thread.task_queue_->AddTask(std::make_unique<FileReadSpeedTest::OverlappedIOFileReadTask>(&overlapped_io_file_read.value(), current_read_start, queue_depth * buffer_size, i, thread_count, queue_depth, thread.task_queue_.get(), main_task_queue->get(), &completed_threads));
 		switch (add_task_result) {
 		case max::Hardware::CPU::TaskQueue::AddTaskError::Okay:
 			break;
@@ -138,12 +154,22 @@ int main(int argc, const char * argv[]) {
 	}
 
 
+
+	// Issue initial reads.
+	overlapped_io_file_read->read_issue_time_ = std::chrono::high_resolution_clock::now();
+	for (size_t i = 0; i < queue_depth; i++) {
+		overlapped_io_file_read->Read(i);
+	}
+
+
+
 	// Wait for all tasks to be complete.
 	// TODO: Currently, the Shutdown is queued up before the follow-up tasks.
 	max::Hardware::CPU::TaskRunnerLoop(main_task_queue->get());
 
 
 
+	// TODO: If queue depth is less than thread pool size, some threads will always be waiting.
 	// Shutdown thread pool. Wait for the shutdown to complete.
 	for (auto& thread: thread_pool->task_threads_) {
 		thread.task_queue_->Shutdown();
@@ -153,6 +179,10 @@ int main(int argc, const char * argv[]) {
 	}
 
 
+
+	// TODO: There seems to be some sort of race condition when queue depth != thread count.
+	// Some of the times aren't updated away from 0.
+	// This might also be context[i]->time is set on the wrong i.
 	overlapped_io_file_read->PrintResults();
 
 

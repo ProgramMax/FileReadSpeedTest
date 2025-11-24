@@ -20,6 +20,7 @@ namespace FileReadSpeedTest {
 		ErrorNode = 3,
 		AwaitingBufferSizeNode = 4,
 		AwaitingThreadCountNode = 5,
+		AwaitingQueueDepthNode = 6,
 	};
 
 	Action ProcessCommandLineParameters(int argc, const char * argv[]) noexcept {
@@ -47,6 +48,11 @@ namespace FileReadSpeedTest {
 			max::Containers::StateMachine::Transition{
 				max::Containers::StateMachine::StringMatcher{std::string_view{"--thread_count"}}, [](const std::string_view& input) {
 					return NodeIndices::AwaitingThreadCountNode;
+				}
+			},
+			max::Containers::StateMachine::Transition{
+				max::Containers::StateMachine::StringMatcher{std::string_view{"--queue_depth"}}, [](const std::string_view& input) {
+					return NodeIndices::AwaitingQueueDepthNode;
 				}
 			},
 			max::Containers::StateMachine::Transition{
@@ -112,7 +118,25 @@ namespace FileReadSpeedTest {
 			}
 		);
 
-		auto state_machine = max::Containers::StateMachine::StateMachine{NodeIndices::StartNode, std::make_tuple(start_node, awaiting_flags_node, std::move(awaiting_input_file_node), std::move(error_node), awaiting_buffer_size_node, awaiting_thread_count_node)};
+		auto queue_depth = std::optional<size_t>{std::nullopt};
+		auto awaiting_queue_depth_node = max::Containers::StateMachine::MakeNode(NodeIndices::AwaitingQueueDepthNode,
+			max::Containers::StateMachine::Transition{
+				max::Containers::StateMachine::AnythingMatcher<std::string_view>{}, [&queue_depth, &error_message](const std::string_view& input) {
+					// TODO: Also here
+					char * end = nullptr;
+					unsigned long long temp = std::strtoull(input.data(), &end, /*base=*/10);
+					if (errno == ERANGE) {
+						error_message = "Could not convert parameter to number: ";
+						*error_message += input;
+						return NodeIndices::ErrorNode;
+					}
+					queue_depth = temp;
+					return NodeIndices::AwaitingFlagsNode;
+				}
+			}
+		);
+
+		auto state_machine = max::Containers::StateMachine::StateMachine{NodeIndices::StartNode, std::make_tuple(start_node, awaiting_flags_node, std::move(awaiting_input_file_node), std::move(error_node), awaiting_buffer_size_node, awaiting_thread_count_node, awaiting_queue_depth_node)};
 
 
 
@@ -133,7 +157,7 @@ namespace FileReadSpeedTest {
 
 
 
-		return Action{SuccessAction{std::move(*input_file), std::move(buffer_size), std::move(thread_count)}};
+		return Action{SuccessAction{std::move(*input_file), std::move(buffer_size), std::move(thread_count), std::move(queue_depth)}};
 	}
 
 } // namespace FileReadSpeedTest

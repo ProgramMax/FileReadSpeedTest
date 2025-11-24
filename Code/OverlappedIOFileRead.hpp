@@ -61,7 +61,7 @@ namespace FileReadSpeedTest {
 
 		explicit OverlappedIOFileRead(OverlappedIOFile overlapped_io_file, CompletionPort completion_port, std::vector<IOContext> contexts, LARGE_INTEGER file_size) noexcept;
 
-		void Read() noexcept;
+		void Read(size_t context_index) noexcept;
 		void WaitForThreadsToFinish() noexcept;
 
 		void PrintResults() noexcept;
@@ -72,7 +72,7 @@ namespace FileReadSpeedTest {
 		std::vector<IOContext> contexts_;
 		LARGE_INTEGER file_size_;
 		std::chrono::time_point<std::chrono::high_resolution_clock> read_issue_time_;
-	
+
 	};
 
 	std::optional<size_t> GetIdealBufferSize(const OverlappedIOFile& file) noexcept;
