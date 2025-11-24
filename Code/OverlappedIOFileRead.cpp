@@ -168,7 +168,10 @@ namespace FileReadSpeedTest {
 		// Wait for worker threads to finish
 		WaitForMultipleObjects(static_cast<DWORD>(thread_pool_.threads_.size()), (const HANDLE*)thread_pool_.threads_.data(), TRUE, INFINITE);
 		*/
+		PrintResults();
+	}
 
+	void OverlappedIOFileRead::PrintResults() noexcept {
 		auto open_delay = std::chrono::duration_cast<std::chrono::nanoseconds>(overlapped_io_file_.file_open_time_ - pre_open_time_);
 		auto open_to_read_delay = std::chrono::duration_cast<std::chrono::nanoseconds>(read_issue_time_ - overlapped_io_file_.file_open_time_);
 		std::cout << "Open delay: " << open_delay << std::endl;

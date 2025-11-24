@@ -41,7 +41,8 @@ namespace FileReadSpeedTest {
 
 		BOOL result = GetQueuedCompletionStatus(overlapped_io_file_read_->completion_port_.handle_, &bytes_transferred, &completion_key, reinterpret_cast<LPOVERLAPPED*>(&context), INFINITE);
 
-		std::cout << "Buffer received" << std::endl;
+		context->request_complete_time_ = std::chrono::high_resolution_clock::now();
+		context->is_complete_ = true;
 
 		auto new_read_offset = GetNewReadOffset(overlapped_io_file_read_->file_size_, /* TODO: use context->file_offset_ */ current_read_start_, buffer_interval_in_bytes_);
 		if (!new_read_offset.has_value()) {
