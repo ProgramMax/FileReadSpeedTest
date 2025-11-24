@@ -121,26 +121,20 @@ namespace FileReadSpeedTest {
 		, file_size_(std::move(file_size))
 	{}
 
-	void OverlappedIOFileRead::Read() noexcept {
-		read_issue_time_ = std::chrono::high_resolution_clock::now();
-
-		// TODO: Only have a certain number of IOPS in flight at a time?
-		for (DWORD i = 0; i < contexts_.size(); ++i) {
-			contexts_[i].request_start_time_ = std::chrono::high_resolution_clock::now();
-			BOOL result = ReadFile(overlapped_io_file_.handle_, contexts_[i].buffer_.memory_, contexts_[i].bytes_to_read_, nullptr, &contexts_[i].overlapped_);
-			if (!result) {
-				DWORD error = GetLastError();
-				// TODO: ERROR_INVALID_USER_BUFFER or ERROR_NOT_ENOUGH_MEMORY if too many outstanding asynchronous IO operations
-				if (error != ERROR_IO_PENDING) {
-					// TODO: error
-					continue;
-				}
+	void OverlappedIOFileRead::Read(size_t context_index) noexcept {
+		contexts_[context_index].request_start_time_ = std::chrono::high_resolution_clock::now();
+		BOOL result = ReadFile(overlapped_io_file_.handle_, contexts_[context_index].buffer_.memory_, contexts_[context_index].bytes_to_read_, nullptr, &contexts_[context_index].overlapped_);
+		if (!result) {
+			DWORD error = GetLastError();
+			// TODO: ERROR_INVALID_USER_BUFFER or ERROR_NOT_ENOUGH_MEMORY if too many outstanding asynchronous IO operations
+			if (error != ERROR_IO_PENDING) {
+				// TODO: error
 			}
-
-			// TODO: Handle when the OS makes the operation synchronous:
-			// https://learn.microsoft.com/en-us/previous-versions/troubleshoot/windows/win32/asynchronous-disk-io-synchronous
-			// This can happen when FS compression or encryption is enabled.
 		}
+
+		// TODO: Handle when the OS makes the operation synchronous:
+		// https://learn.microsoft.com/en-us/previous-versions/troubleshoot/windows/win32/asynchronous-disk-io-synchronous
+		// This can happen when FS compression or encryption is enabled.
 	}
 
 	void OverlappedIOFileRead::WaitForThreadsToFinish() noexcept {

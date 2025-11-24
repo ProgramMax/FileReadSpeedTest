@@ -27,9 +27,7 @@ namespace FileReadSpeedTest {
 	class OverlappedIOFileReadTask : public max::Hardware::CPU::Task {
 	public:
 
-		//explicit OverlappedIOFileReadTask(HANDLE completion_port, size_t buffer_interval_in_bytes, LARGE_INTEGER file_size) noexcept;
-		//explicit OverlappedIOFileReadTask(OverlappedIOFileRead* overlapped_io_file_read) noexcept;
-		explicit OverlappedIOFileReadTask(OverlappedIOFileRead* overlapped_io_file_read, LARGE_INTEGER current_read_start, size_t buffer_interval_in_bytes, size_t context_index, size_t thread_count, max::Hardware::CPU::TaskQueue* task_queue, max::Hardware::CPU::TaskQueue* max_task_queue, size_t* completed_threads) noexcept;
+		explicit OverlappedIOFileReadTask(OverlappedIOFileRead* overlapped_io_file_read, LARGE_INTEGER current_read_start, size_t buffer_interval_in_bytes, size_t context_index, size_t thread_count, size_t queue_depth, max::Hardware::CPU::TaskQueue* task_queue, max::Hardware::CPU::TaskQueue* max_task_queue, size_t* completed_threads) noexcept;
 
 		void Run() noexcept override;
 
@@ -40,6 +38,7 @@ namespace FileReadSpeedTest {
 		LARGE_INTEGER current_read_start_;
 		size_t context_index_;
 		size_t thread_count_;
+		size_t queue_depth_;
 		max::Hardware::CPU::TaskQueue* task_queue_;
 		max::Hardware::CPU::TaskQueue* main_task_queue_;
 		size_t* completed_threads_;

@@ -16,6 +16,7 @@ namespace FileReadSpeedTest {
 		std::string_view file_path_;
 		std::optional<size_t> buffer_size_;
 		std::optional<size_t> thread_count_;
+		std::optional<size_t> queue_depth_;
 	};
 
 	struct ErrorAction {
